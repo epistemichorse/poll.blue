@@ -1,0 +1,35 @@
+# fly.toml file generated for poll-blue on 2023-04-12T21:52:35+02:00
+
+app = "poll-blue"
+kill_signal = "SIGINT"
+kill_timeout = 5
+primary_region = "ewr"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 3000
+  processes = ["app"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+  
+[[services.http_checks]]
+  interval = 10000
+  grace_period = "5s"
+  method = "get"
+  path = "/status"
+  protocol = "http"
+  restart_limit = 0
+  timeout = 2000
+  tls_skip_verify = false
+  [services.http_checks.headers]

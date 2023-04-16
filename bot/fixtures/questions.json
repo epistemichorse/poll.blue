@@ -1,0 +1,137 @@
+[
+  {
+    "text": "@poll.blue What is your favorite color?\n\nA. Red\nB. Blue\nC. Green\nD. Yellow",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue",
+      "Green",
+      "Yellow"
+    ]
+  },
+  {
+    "text": "@poll.blue What is your favorite color?\n\na. Red\nb. Blue\nc. Green\nd. Yellow",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue",
+      "Green",
+      "Yellow"
+    ]
+  },
+  {
+    "text": "@poll.blue What is your favorite color?\n\n1. Red\n2. Blue\n3. Green\n4. Yellow",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue",
+      "Green",
+      "Yellow"
+    ]
+  },
+  {
+    "text": "@poll.blue What is your favorite color?\n1. Red\n2. Blue\n3. Green\n4. Yellow\n",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue",
+      "Green",
+      "Yellow"
+    ]
+  },
+  {
+    "text": "@poll.blue What is your favorite color?\n1. Red\n2. Blue\n3. Green\n\n",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue",
+      "Green"
+    ]
+  },
+  {
+    "text": "@poll.blue What is your favorite color?\n1. Red\n2. Blue",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue"
+    ]
+  },
+  {
+    "text": "@poll.blue What is your favorite color?\n1.  Red\n2. Blue ",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue"
+    ]
+  },
+  {
+    "text": ".@poll.blue What is your favorite color?\n1.  Red\n2. Blue ",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue"
+    ]
+  },
+  {
+    "text": "@poll.blue What is your favorite color?\n1 - Red\n2 - Blue ",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue"
+    ]
+  },
+  {
+    "text": "@poll.blue What is your favorite color?\n1: Red\n2: Blue ",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue"
+    ]
+  },
+  {
+    "text": "@poll.blue What is your favorite color?\n1  - Red\n2. Blue ",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue"
+    ]
+  },
+  {
+    "text": "@poll.blue is berduck a duck? \n A - yea \nB - no",
+    "question": "is berduck a duck? ",
+    "answers": [
+      "yea",
+      "no"
+    ]
+  },
+  {
+    "text": "@poll.blue is berduck a duck? \n A - yea \n B - no  \nC : whateva  \n D: idk  \n",
+    "question": "is berduck a duck? ",
+    "answers": [
+      "yea",
+      "no",
+      "whateva",
+      "idk"
+    ]
+  },
+  {
+    "text": "@poll.blue is berduck a duck? \n a - yea \n b - no  \nc : whateva  \n d: idk  \n",
+    "question": "is berduck a duck? ",
+    "answers": [
+      "yea",
+      "no",
+      "whateva",
+      "idk"
+    ]
+  },
+  {
+    "text": "@poll.blue is berduck a duck? \n\n 1 - yea \n\n 2 - no  \n\n3 : whateva  \n\n 4: idk \n ",
+    "question": "is berduck a duck? ",
+    "answers": [
+      "yea",
+      "no",
+      "whateva",
+      "idk"
+    ]
+  }
+]
