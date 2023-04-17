@@ -185,7 +185,8 @@ export class Bot {
         ];
         for (const [i, _answer] of options.poll.answers.entries()) {
             const item = poll.enumeration === 'number' ? emojiNumbers[i] : emojiLetters[i];
-            postTemplate.push([`${item} ${options.poll.answers[i]}`, `https://poll.blue/p/${visibleId}/${i + 1}`]);
+            postTemplate.push([`${item} `, undefined]);
+            postTemplate.push([`${options.poll.answers[i]}`, `https://poll.blue/p/${visibleId}/${i + 1}`]);
             postTemplate.push(['\n', undefined]);
         }
         postTemplate.push([`\n`, undefined]);
