@@ -71,7 +71,7 @@ function makeReplyRef(): AppBskyFeedPost.ReplyRef {
     return {
         parent: {
             cid: 'a',
-            uri: 'b',
+            uri: 'at://did:plc:3rpxqcxyf5aqs3s7jpd36gbm/app.bsky.feed.post/3jtjczuf2ls2s',
         },
         root: {
             cid: 'c',
@@ -99,13 +99,13 @@ Deno.test("parses notifications", async () => {
 
 Deno.test("posts polls", async () => {
     const bot = await setup();
-    const question = {
+    const poll = {
         question: "Question",
-        answers: ["Answer 1", "Answer 2", "Answer 3", "Answer 4"]
+        answers: ["Answer 1", "Answer 2", "Answer 3", "你好世界"]
     }
     const { visibleId: id, createdAt } = (await bot.postPoll({
-        question: question.question,
-        answers: question.answers,
+        question: poll.question,
+        answers: poll.answers,
         enumeration: 'lower',
     }, makeReplyRef(), 'epistemic.horse'))!;
     assertSpyCall(bot.Agent?.api.app.bsky.feed.post.create! as unknown as Spy, 0,
@@ -113,14 +113,24 @@ Deno.test("posts polls", async () => {
             args: [
                 { repo: undefined },
                 {
-                    text: "Vote a\nVote b\nVote c\nVote d\n\nShow results",
-                    reply: { parent: { cid: "a", uri: "b" }, root: { cid: "c", uri: "d" } },
+                    text: `"Question" asked by @epistemic.horse. Vote below!\n\n🅰 Answer 1\n🅱 Answer 2\n🅲 Answer 3\n🅳 你好世界\n\n📊 Show results`,
+                    reply: {
+                        parent: {
+                            cid: "a",
+                            uri: 'at://did:plc:3rpxqcxyf5aqs3s7jpd36gbm/app.bsky.feed.post/3jtjczuf2ls2s'
+                        },
+                        root: {
+                            cid: "c",
+                            uri: "d"
+                        }
+                    },
                     facets: [
-                        { index: { byteStart: 0, byteEnd: 6 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/1` }] },
-                        { index: { byteStart: 7, byteEnd: 13 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/2` }] },
-                        { index: { byteStart: 14, byteEnd: 20 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/3` }] },
-                        { index: { byteStart: 21, byteEnd: 27 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/4` }] },
-                        { index: { byteStart: 28, byteEnd: 41 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/0` }] },
+                        { index: { byteStart: 20, byteEnd: 36 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://staging.bsky.app/profile/epistemic.horse/post/3jtjczuf2ls2s` }] },
+                        { index: { byteStart: 51, byteEnd: 64 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/1` }] },
+                        { index: { byteStart: 65, byteEnd: 78 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/2` }] },
+                        { index: { byteStart: 79, byteEnd: 92 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/3` }] },
+                        { index: { byteStart: 93, byteEnd: 110 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/4` }] },
+                        { index: { byteStart: 112, byteEnd: 129 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/0` }] },
                     ],
                     createdAt,
                 }
