@@ -18,6 +18,11 @@ export type Poll = {
     enumeration: Enumeration;
 }
 
+export type PostPollResult = {
+    createdAt: string;
+    visibleId: string;
+}
+
 export class Bot {
     private agent: Agent | undefined;
     private username: string;
@@ -25,11 +30,15 @@ export class Bot {
     private dbClient: Client;
     private postUriCache: TTL<boolean>;
 
-    constructor(options: { username: string, password: string, dbClient: Client }) {
+    constructor(options: { username: string, password: string, dbClient: Client, postUriCache: TTL<boolean> }) {
         this.username = options.username;
         this.password = options.password;
         this.dbClient = options.dbClient;
-        this.postUriCache = new TTL(1000 * 60 * 60 * 24);
+        this.postUriCache = options.postUriCache;
+    }
+
+    get Agent() {
+        return this.agent;
     }
 
     async setupAgent(agent: Agent) {
@@ -128,12 +137,13 @@ export class Bot {
         throw new Error(`failed to parse notification: ${text}`);
     }
 
-    postPoll(poll: Poll, replyRef: AppBskyFeedPost.ReplyRef, author: string) {
+    async postPoll(poll: Poll, replyRef: AppBskyFeedPost.ReplyRef, author: string): Promise<PostPollResult | undefined> {
         const visibleId = generateId(6);
+        const createdAt = (new Date()).toISOString();
         const results = poll.answers.map(() => 0).concat([0]);
         const postUri = replyRef.parent.uri;
         try {
-            this.dbClient.queryObject`INSERT INTO polls (posted_by, post_uri, question, answers, results, visible_id) VALUES (${author}, ${postUri}, ${poll.question}, ${JSON.stringify(poll.answers)}, ${JSON.stringify(results)}, ${visibleId})`;
+            await this.dbClient.queryObject`INSERT INTO polls (posted_by, post_uri, question, answers, results, visible_id) VALUES (${author}, ${postUri}, ${poll.question}, ${JSON.stringify(poll.answers)}, ${JSON.stringify(results)}, ${visibleId})`;
         } catch (e) {
             log.error(e);
             return;
@@ -169,22 +179,25 @@ export class Bot {
                 uri: `https://poll.blue/p/${visibleId}/0`
             }]
         })
-        this.agent?.api.app.bsky.feed.post.create(
-            { repo: this.agent.session?.did },
-            {
-                text: postTemplate,
-                reply: replyRef,
-                facets: links,
-                createdAt: (new Date()).toISOString()
-            },
-        );
-        this.agent?.api.app.bsky.feed.like.create(
-            { repo: this.agent.session?.did },
-            {
-                subject: { uri: replyRef.parent.uri, cid: replyRef.parent.cid },
-                createdAt: (new Date()).toISOString(),
-            }
-        );
+        await Promise.all([
+            this.agent?.api.app.bsky.feed.post.create(
+                { repo: this.agent.session?.did },
+                {
+                    text: postTemplate,
+                    reply: replyRef,
+                    facets: links,
+                    createdAt
+                })
+            ,
+            this.agent?.api.app.bsky.feed.like.create(
+                { repo: this.agent.session?.did },
+                {
+                    subject: { uri: replyRef.parent.uri, cid: replyRef.parent.cid },
+                    createdAt
+                }
+            )
+        ]);
+        return { visibleId, createdAt };
     }
 }
 
