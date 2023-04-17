@@ -5,8 +5,7 @@ export default class extends AbstractMigration<ClientPostgreSQL> {
     async up(info: Info): Promise<void> {
         this.client.queryObject`
         ALTER TABLE polls
-            ADD COLUMN posted_by varchar(100),
-            ADD COLUMN created_at timestamp WITH TIME ZONE NOT NULL DEFAULT now();
+            ALTER COLUMN question TYPE character varying(200);
         `
     }
 
@@ -14,8 +13,7 @@ export default class extends AbstractMigration<ClientPostgreSQL> {
     async down(info: Info): Promise<void> {
         this.client.queryObject`
         ALTER TABLE polls
-            DROP COLUMN posted_by,
-            DROP COLUMN created_at;
+            ALTER COLUMN question TYPE character varying(100);
         `
     }
 }
