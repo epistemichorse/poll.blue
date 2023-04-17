@@ -149,36 +149,8 @@ export class Bot {
             return;
         }
         this.postUriCache.set(replyRef.parent.uri, true);
-        log.info(`posted poll ${visibleId} for ${postUri}`);
-        let postTemplate = '';
-        const links: AppBskyRichtextFacet.Main[] = [];
-        for (const [i, _answer] of poll.answers.entries()) {
-            const startIndex = postTemplate.length;
-            if (poll.enumeration === 'upper') {
-                postTemplate += `Vote ${String.fromCharCode(65 + i)}`;
-            } else if (poll.enumeration === 'lower') {
-                postTemplate += `Vote ${String.fromCharCode(97 + i)}`;
-            } else if (poll.enumeration === 'number') {
-                postTemplate += `Vote ${i + 1}`;
-            }
-            links.push({
-                index: { byteStart: startIndex, byteEnd: postTemplate.length },
-                features: [{
-                    $type: 'app.bsky.richtext.facet#link',
-                    uri: `https://poll.blue/p/${visibleId}/${i + 1}`
-                }]
-            });
-            postTemplate += '\n';
-        }
-        const resultsStart = postTemplate.length;
-        postTemplate += `\nShow results`;
-        links.push({
-            index: { byteStart: resultsStart, byteEnd: postTemplate.length },
-            features: [{
-                $type: 'app.bsky.richtext.facet#link',
-                uri: `https://poll.blue/p/${visibleId}/0`
-            }]
-        })
+        log.info(`posted poll ${visibleId} by @${author} at ${postUri}`);
+        const [postTemplate, links] = this.generatePollText({ visibleId, poll, replyRef, author });
         await Promise.all([
             this.agent?.api.app.bsky.feed.post.create(
                 { repo: this.agent.session?.did },
@@ -199,6 +171,39 @@ export class Bot {
         ]);
         return { visibleId, createdAt };
     }
+
+    generatePollText(options: { visibleId: string, poll: Poll, replyRef: AppBskyFeedPost.ReplyRef, author: string }): [string, AppBskyRichtextFacet.Main[]] {
+        const emojiNumbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
+        const emojiLetters = ['🅰', '🅱', '🅲', '🅳']
+        const { visibleId, poll, replyRef, author } = options;
+        const links: AppBskyRichtextFacet.Main[] = [];
+        const postId = replyRef.parent.uri.split('/').slice(-1)[0];
+        const postTemplate: [string, string | undefined][] = [
+            [`"${poll.question}" asked by `, undefined],
+            [`@${author}`, `https://staging.bsky.app/profile/${author}/post/${postId}`],
+            [`. Vote below!\n\n`, undefined],
+        ];
+        for (const [i, _answer] of options.poll.answers.entries()) {
+            const item = poll.enumeration === 'number' ? emojiNumbers[i] : emojiLetters[i];
+            postTemplate.push([`${item} ${options.poll.answers[i]}`, `https://poll.blue/p/${visibleId}/${i + 1}`]);
+            postTemplate.push(['\n', undefined]);
+        }
+        postTemplate.push([`\n`, undefined]);
+        postTemplate.push([`📊 Show results`, `https://poll.blue/p/${visibleId}/0`]);
+        for (let i = 0, len = 0; i < postTemplate.length; len += byteLength(postTemplate[i][0]), i++) {
+            if (postTemplate[i][1]) {
+                links.push({
+                    index: { byteStart: len, byteEnd: len + byteLength(postTemplate[i][0]) },
+                    features: [{
+                        $type: 'app.bsky.richtext.facet#link',
+                        uri: postTemplate[i][1]
+                    }]
+                })
+            }
+        }
+        const text = postTemplate.map(t => t[0]).join('');
+        return [text, links];
+    }
 }
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -209,4 +214,8 @@ function generateId(length: number) {
         result += alphabet[Math.floor(Math.random() * alphabet.length)];
     }
     return result;
+}
+
+function byteLength(s: string): number {
+    return (new TextEncoder().encode(s)).length
 }
