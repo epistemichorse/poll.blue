@@ -12,5 +12,10 @@ export default class extends AbstractMigration<ClientPostgreSQL> {
 
     /** Runs on rollback */
     async down(info: Info): Promise<void> {
+        this.client.queryObject`
+        ALTER TABLE polls
+            DROP COLUMN posted_by,
+            DROP COLUMN created_at;
+        `
     }
 }
