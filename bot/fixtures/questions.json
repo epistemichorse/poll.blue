@@ -135,11 +135,23 @@
     ]
   },
   {
-    "text": "@poll.blue\n What is your favorite color?\n1. Red\n2. Blue",
-    "question": "What is your favorite color?",
+    "text": "first poll I've seen on bsky! gonna copy:\n\n@poll.blue what's my vibe-gender?\n\nA- autistic female\nB- not autistic female\nC- autistic male\nD- not autistic male",
+    "question": "what's my vibe-gender?",
     "answers": [
-      "Red",
-      "Blue"
+      "autistic female",
+      "not autistic female",
+      "autistic male",
+      "not autistic male"
+    ]
+  },
+  {
+    "text": "Hey, @poll.blue\nWhich Amendment of the US CON is most tsundere?\n\nA- 1A “I’ll write bad things about you if you don’t vote for me”\nB- 2A “I’ll shoot if you don’t vote for me.”\nC- 3A “It’s not like I want you in my house anyways”\nD- 4A “You think you can hide things from me?”",
+    "question": "Which Amendment of the US CON is most tsundere?",
+    "answers": [
+      "1A “I’ll write bad things about you if you don’t vote for me”",
+      "2A “I’ll shoot if you don’t vote for me.”",
+      "3A “It’s not like I want you in my house anyways”",
+      "4A “You think you can hide things from me?”"
     ]
   }
 ]
