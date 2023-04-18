@@ -133,5 +133,13 @@
       "whateva",
       "idk"
     ]
+  },
+  {
+    "text": "@poll.blue\n What is your favorite color?\n1. Red\n2. Blue",
+    "question": "What is your favorite color?",
+    "answers": [
+      "Red",
+      "Blue"
+    ]
   }
 ]
