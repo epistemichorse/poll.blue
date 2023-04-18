@@ -138,3 +138,18 @@ Deno.test("posts polls", async () => {
         });
     assertSpyCall(bot.Agent?.api.app.bsky.feed.like.create! as unknown as Spy, 0, {});
 })
+
+Deno.test("truncates long polls", async () => {
+    const bot = await setup();
+    const poll = {
+        question: Array.from({ length: 200 }).join("a"),
+        answers: ["Answer 1", "Answer 2", "Answer 3", "你好世界"]
+    }
+    await bot.postPoll({
+        question: poll.question,
+        answers: poll.answers,
+        enumeration: 'lower',
+    }, makeReplyRef(), 'epistemic.horse');
+    assertSpyCall(bot.Agent?.api.app.bsky.feed.post.create! as unknown as Spy, 0, {});
+    assertSpyCall(bot.Agent?.api.app.bsky.feed.like.create! as unknown as Spy, 0, {});
+})
