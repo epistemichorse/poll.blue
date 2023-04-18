@@ -46,6 +46,7 @@ export default function Home(props: PageProps<Results>) {
     return percentage;
   });
   const voted = Number(props.url.searchParams.get("v"));
+  const interactions = results.reduce((a, b) => a + b, 0);
 
   return (
     <>
@@ -95,6 +96,9 @@ export default function Home(props: PageProps<Results>) {
             </div>
           ))}
         </div>
+        <p class="text-gray-500 text-center my-4">
+          {interactions} {interactions === 1 ? "interaction" : "interactions"}
+        </p>
         <p class="text-white text-center">
           <a
             href={postUriToBskyLink(postUri)}
