@@ -79,18 +79,27 @@ export default function Home(props: PageProps<Results>) {
         <p class="text-white text-center text-2xl">{question}</p>
         <div class="my-6">
           {pollPercentages.slice(1).map((result, i) => (
-            <div class="flex">
-              <div
-                class="blue text-white m-2 p-2 slide whitespace-nowrap"
-                style={"width: " + (Math.max(result, 1)) + "%"}
-              >
-                {answers[i]} {voted === i + 1 && (
-                  <span>
-                    ✓
-                  </span>
-                )}
+            <div class="flex relative overflow-hidden">
+              <div class="flex flex-auto">
+                <div
+                  class="blue text-white m-2 p-2 slide whitespace-nowrap"
+                  style={"width: " + (Math.max(result, 1)) + "%"}
+                >
+                </div>
+                <div class="m-2 p-2 text-right flex-auto text-white number whitespace-nowrap">
+                </div>
+                <span class="absolute text-white p-4 whitespace-nowrap">
+                  {answers[i]} {voted === i + 1 && (
+                    <span>
+                      ✓
+                    </span>
+                  )}
+                </span>
               </div>
-              <div class="m-2 p-2 text-right flex-auto text-white number whitespace-nowrap">
+              <div
+                class="p-4 text-right text-white number whitespace-nowrap"
+                style="z-index: 1; background-color: rgb(20, 20, 23)"
+              >
                 {result.toFixed(1)}% ({results.slice(1)[i]})
               </div>
             </div>
