@@ -77,7 +77,7 @@ export class Bot {
             try {
                 const poll = this.parseNotification(text);
                 const author = notif.author.handle;
-                this.postPoll(poll, replyRef, author);
+                await this.postPoll(poll, replyRef, author);
             } catch (e) {
                 log.error(e);
                 continue;
