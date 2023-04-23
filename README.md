@@ -1,6 +1,6 @@
 # poll.blue
 
-poll.blue is a polling app for Bluesky.
+poll.blue is a polling app for Bluesky. Posting instructions available on the landing page: [https://poll.blue](https://poll.blue).
 
 ### Testing locally
 
