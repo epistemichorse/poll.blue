@@ -29,12 +29,12 @@ export default function Home() {
 
           <pre class="my-4 p-4 bg-gray-800 text-white rounded">
             <code>
-              {'@poll.blue <question>\n\n'+
+              {'@poll.blue Question\n\n'+
 
-              'A. <option 1>\n' +
-              'B. <option 2>\n' +
-              'C. <option 3>\n' +
-              'D. <option 4>\n'}
+              'A. Option 1\n' +
+              'B. Option 2\n' +
+              'C. Option 3\n' +
+              'D. Option 4\n'}
             </code>
           </pre>
         </p>
