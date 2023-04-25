@@ -105,7 +105,10 @@ export default function Home(props: PageProps<Results>) {
             </div>
           ))}
         </div>
-        <p class="text-gray-500 text-center my-4">
+        <p
+          class="text-gray-500 text-center my-4"
+          title={`Voting or clicking "Show results" counts as an interaction`}
+        >
           {interactions} {interactions === 1 ? "interaction" : "interactions"}
         </p>
         <p class="text-white text-center">
