@@ -40,9 +40,7 @@ export default function Home() {
         </p>
         <p class="my-6 text-white">
           The option list can be enumerated with uppercase letters, lowercase
-          letters or numbers. Polls can have between 2-4 options. I'm not sure
-          if Bluesky hides posts that start with a mention like on Twitter, so
-          the poll may also have a period before the @poll.blue mention.
+          letters or numbers. Polls can have between 2-4 options.
         </p>
         <p class="my-6 text-white">
           Duplicate votes are prevented by only allowing one vote per IP. This
