@@ -72,6 +72,10 @@ function getIp(req: Request): string | undefined {
     return undefined;
   }
   const ip = hosts[0];
+  // Stop weird ip addresses
+  if (ip.startsWith("0.")) {
+    return undefined;
+  }
   return ip;
 }
 
