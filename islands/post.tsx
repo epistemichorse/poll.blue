@@ -3,8 +3,8 @@ import { useState } from "preact/hooks";
 export default function PostPoll() {
   const [handle, setHandle] = useState("");
   const [password, setPassword] = useState("");
-  const [question, setQuestion] = useState("question?");
-  const [options, setOptions] = useState(["op1", "op2", "op3", "op4"]);
+  const [question, setQuestion] = useState("");
+  const [options, setOptions] = useState(["", "", "", ""]);
   const [hasPosted, setHasPosted] = useState(false);
   const [error, setError] = useState("");
   async function postPoll(evt: Event) {
@@ -111,7 +111,7 @@ export default function PostPoll() {
                     options.map((o, j) => (i == j ? (target as any).value : o)),
                   );
                 }}
-                placeholder="something.bsky.social"
+                placeholder=""
               />
             </div>
           ))}
