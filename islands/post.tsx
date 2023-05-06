@@ -85,7 +85,7 @@ export default function PostPoll() {
               id="question"
               type="text"
               value={question}
-              maxLength={50}
+              maxLength={200}
               onInput={({ target }) => {
                 setQuestion(target && (target as any).value);
               }}
