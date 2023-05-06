@@ -1,9 +1,8 @@
-import { default as Agent, AppBskyNotificationListNotifications, AppBskyFeedPost, AppBskyRichtextFacet } from "https://esm.sh/v115/@atproto/api@0.2.3"
+import { default as Agent, AppBskyNotificationListNotifications, AppBskyFeedPost } from "https://esm.sh/v115/@atproto/api@0.2.3"
 import { Client } from "https://deno.land/x/postgres@v0.17.0/mod.ts";
 import TTL from "https://deno.land/x/ttl/mod.ts";
 import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
-
-type Enumeration = 'upper' | 'lower' | 'number';
+import { Enumeration, Poll, generateId, generatePollText } from "../lib/poll-utils.ts";
 
 // lord forgive me
 const pollRegexes: [Enumeration, RegExp][] = [
@@ -11,12 +10,6 @@ const pollRegexes: [Enumeration, RegExp][] = [
     ['lower', /*  */ /^.*?@([a-zA-Z0-9_.]+)[\s\n]*(.*)\s*\n+\s*a\s*[\.\-:)]\s*(.*?)\s*\n\s*b\s*[\.\-:)]\s*(.*?)\s*(?:\n\s*c\s*[\.\-:)]\s*(.*?)\s*(?:\n\s*d\s*[\.\-:)]\s*(.*?))?)?\s*$/m],
     ['number', /* */ /^.*?@([a-zA-Z0-9_.]+)[\s\n]*(.*)\s*\n+\s*1\s*[\.\-:)]\s*(.*?)\s*\n\s*2\s*[\.\-:)]\s*(.*?)\s*(?:\n\s*3\s*[\.\-:)]\s*(.*?)\s*(?:\n\s*4\s*[\.\-:)]\s*(.*?))?)?\s*$/m],
 ]
-
-export type Poll = {
-    question: string;
-    answers: string[];
-    enumeration: Enumeration;
-}
 
 export type PostPollResult = {
     createdAt: string;
@@ -150,7 +143,7 @@ export class Bot {
         }
         this.postUriCache.set(replyRef.parent.uri, true);
         log.info(`posted poll ${visibleId} by @${author} at ${postUri}`);
-        const [postTemplate, links] = this.generatePollText({ visibleId, poll, replyRef, author });
+        const [postTemplate, links] = generatePollText({ visibleId, poll, replyRef, author, pollStyle: 'bot' });
         await Promise.all([
             this.agent?.api.app.bsky.feed.post.create(
                 { repo: this.agent.session?.did },
@@ -172,70 +165,4 @@ export class Bot {
         return { visibleId, createdAt };
     }
 
-    generatePollText(options: { visibleId: string, poll: Poll, replyRef: AppBskyFeedPost.ReplyRef, author: string }): [string, AppBskyRichtextFacet.Main[]] {
-        const emojiNumbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
-        const emojiLetters = ['🅰', '🅱', '🅲', '🅳']
-        const { visibleId, poll, replyRef, author } = options;
-        const postId = replyRef.parent.uri.split('/').slice(-1)[0];
-        const postTemplate: Template[] = [
-            { text: `"${poll.question}"`, link: undefined, truncate: 'no' },
-            { text: ` asked by `, link: undefined, truncate: 'yes' },
-            { text: `@${author}`, link: `https://staging.bsky.app/profile/${author}/post/${postId}`, truncate: 'yes' },
-            { text: `. Vote below!`, link: undefined, truncate: 'yes' },
-            { text: `\n\n`, link: undefined, truncate: 'no' },
-        ];
-        for (const [i, _answer] of options.poll.answers.entries()) {
-            const item = poll.enumeration === 'number' ? emojiNumbers[i] : emojiLetters[i];
-            postTemplate.push({ text: `${item} `, link: undefined, truncate: 'no' });
-            postTemplate.push({ text: `${options.poll.answers[i]}`, link: `https://poll.blue/p/${visibleId}/${i + 1}`, truncate: 'no' });
-            postTemplate.push({ text: '\n', link: undefined, truncate: 'no' });
-        }
-        postTemplate.push({ text: `\n`, link: undefined, truncate: 'no' });
-        postTemplate.push({ text: `📊 Show results`, link: `https://poll.blue/p/${visibleId}/0`, truncate: 'no' });
-        let [text, links] = buildTemplate(postTemplate);
-        if (text.length > 300) {
-            [text, links] = buildTemplate(postTemplate.filter(t => t.truncate === 'no'))
-        }
-        if (text.length > 300) {
-            throw new Error(`post too long: ${text.length} bytes`)
-        }
-        return [text, links];
-    }
-}
-
-interface Template {
-    text: string;
-    link?: string;
-    truncate: 'yes' | 'no';
-}
-
-function buildTemplate(template: Template[]): [string, AppBskyRichtextFacet.Main[]] {
-    const links: AppBskyRichtextFacet.Main[] = [];
-    for (let i = 0, len = 0; i < template.length; len += byteLength(template[i].text), i++) {
-        if (template[i].link) {
-            links.push({
-                index: { byteStart: len, byteEnd: len + byteLength(template[i].text) },
-                features: [{
-                    $type: 'app.bsky.richtext.facet#link',
-                    uri: template[i].link
-                }]
-            })
-        }
-    }
-    const text = template.map(t => t.text).join('');
-    return [text, links];
-}
-
-const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-function generateId(length: number) {
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += alphabet[Math.floor(Math.random() * alphabet.length)];
-    }
-    return result;
-}
-
-function byteLength(s: string): number {
-    return (new TextEncoder().encode(s)).length
 }
