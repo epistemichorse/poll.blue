@@ -18,7 +18,10 @@ export const handler: Handlers<Results | null> = {
   },
 };
 
-function postUriToBskyLink(postUri: string) {
+function postUriToBskyLink(postUri?: string) {
+  if (!postUri) {
+    return "";
+  }
   // at://did:plc:hxqb73a2mcqwgyg64ibvw7ts/app.bsky.feed.post/3jtiwzc4lfh2o
   const [did, , post] = postUri.split("/").slice(-3);
   return `https://staging.bsky.app/profile/${did}/post/${post}`;
@@ -111,14 +114,16 @@ export default function Home(props: PageProps<Results>) {
         >
           {interactions} {interactions === 1 ? "interaction" : "interactions"}
         </p>
-        <p class="text-white text-center">
-          <a
-            href={postUriToBskyLink(postUri)}
-            class="hover:underline text-blue-500"
-          >
-            Posted {!!postedBy && `by @${postedBy}`} on {createdAtFormatted}
-          </a>
-        </p>
+        {!!postUri && (
+          <p class="text-white text-center">
+            <a
+              href={postUriToBskyLink(postUri)}
+              class="hover:underline text-blue-500"
+            >
+              Posted {!!postedBy && `by @${postedBy}`} on {createdAtFormatted}
+            </a>
+          </p>
+        )}
       </div>
     </>
   );

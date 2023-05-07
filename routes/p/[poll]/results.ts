@@ -2,7 +2,7 @@ import { HandlerContext } from "$fresh/server.ts";
 import { getClient } from '../../../db.ts';
 
 export interface Results {
-    post_uri: string;
+    post_uri?: string;
     posted_by: string;
     created_at: string;
     question: string;
