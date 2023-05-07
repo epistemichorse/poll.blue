@@ -58,13 +58,13 @@ export default function PostPoll() {
           <div class="mb-4">
             <label
               class="block text-gray-400 text-sm font-bold mb-2"
-              for="token"
+              for="password"
             >
               Password (not your main password pls)
             </label>
             <input
               class="appearance-none border rounded mb-2 w-full py-2 px-3 text-gray-400 leading-tight focus:outline-none focus:shadow-outline"
-              id="token"
+              id="password"
               type="password"
               value={password}
               maxLength={50}
@@ -77,7 +77,7 @@ export default function PostPoll() {
           <div class="mb-4">
             <label
               class="block text-gray-400 text-sm font-bold mb-2"
-              for="handle"
+              for="question"
             >
               Question
             </label>
