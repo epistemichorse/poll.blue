@@ -40,13 +40,23 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
             identifier: author,
             password: password,
         });
-        await agent?.api.app.bsky.feed.post.create(
+    } catch (e) {
+        log.error(e);
+        return new Response(JSON.stringify({
+            "ok": false,
+            "error": "failed to sign in to bsky",
+        }), { status: 500 });
+    }
+    let postUri = null;
+    try {
+        const createdPost = await agent?.api.app.bsky.feed.post.create(
             { repo: agent.session?.did },
             {
                 text: postTemplate,
                 facets: links,
                 createdAt
-            })
+            });
+        postUri = createdPost?.uri;
     } catch (e) {
         log.error(e);
         return new Response(JSON.stringify({
@@ -55,7 +65,7 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
         }), { status: 500 });
     }
     try {
-        await client.queryObject`INSERT INTO polls (posted_by, post_uri, question, answers, results, visible_id) VALUES (${author}, ${null}, ${poll.question}, ${JSON.stringify(poll.answers)}, ${JSON.stringify(results)}, ${visibleId})`;
+        await client.queryObject`INSERT INTO polls (posted_by, post_uri, question, answers, results, visible_id) VALUES (${author}, ${postUri}, ${poll.question}, ${JSON.stringify(poll.answers)}, ${JSON.stringify(results)}, ${visibleId})`;
     } catch (e) {
         log.error(e);
         return new Response(JSON.stringify({
