@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.183.0/testing/asserts.ts";
-import { Bot } from "./bot.ts";
+import { Bot, generatePollResultsText, DbPoll } from "./bot.ts";
 import {
     default as Agent,
     AppBskyNotificationListNotifications,
@@ -153,3 +153,23 @@ Deno.test("truncates long polls", async () => {
     assertSpyCall(bot.Agent?.api.app.bsky.feed.post.create! as unknown as Spy, 0, {});
     assertSpyCall(bot.Agent?.api.app.bsky.feed.like.create! as unknown as Spy, 0, {});
 })
+
+Deno.test("creates poll results", () => {
+    const text = generatePollResultsText({ question: 'test', answers: ["option 1", "option 2", "option 3", "option 4"], results: [90, 1, 2, 3, 7] } as DbPoll)
+    console.log(text);
+    const expected = `Poll results after 24 hours: test
+
+1️⃣ option 1
+🟦⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️ (1)
+
+2️⃣ option 2
+🟦🟦⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️ (2)
+
+3️⃣ option 3
+🟦🟦⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️ (3)
+
+4️⃣ option 4
+🟦🟦🟦🟦🟦⬜️⬜️⬜️⬜️⬜️ (7)`;
+
+    assertEquals(text, expected);
+});

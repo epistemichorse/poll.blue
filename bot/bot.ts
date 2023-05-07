@@ -1,8 +1,8 @@
-import { default as Agent, AppBskyNotificationListNotifications, AppBskyFeedPost } from "https://esm.sh/v115/@atproto/api@0.2.3"
+import { default as Agent, AppBskyNotificationListNotifications, AppBskyFeedPost, AppBskyFeedDefs } from "https://esm.sh/v115/@atproto/api@0.2.3"
 import { Client } from "https://deno.land/x/postgres@v0.17.0/mod.ts";
 import TTL from "https://deno.land/x/ttl/mod.ts";
 import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
-import { Enumeration, Poll, generateId, generatePollText } from "../lib/poll-utils.ts";
+import { Enumeration, Poll, byteLength, generateId, generatePollText } from "../lib/poll-utils.ts";
 
 // lord forgive me
 const pollRegexes: [Enumeration, RegExp][] = [
@@ -14,6 +14,15 @@ const pollRegexes: [Enumeration, RegExp][] = [
 export type PostPollResult = {
     createdAt: string;
     visibleId: string;
+}
+
+export interface DbPoll {
+    id: number;
+    post_uri: string;
+    results_posted: boolean;
+    question: string;
+    answers: string[];
+    results: number[];
 }
 
 export class Bot {
@@ -44,6 +53,58 @@ export class Bot {
     }
 
     async runJobs() {
+        try {
+            await this.postResults();
+        } catch (e) {
+            log.error(e);
+        }
+
+        try {
+            await this.postLegacyPolls();
+        } catch (e) {
+            log.error(e);
+        }
+    }
+
+    async postResults() {
+        const polls = await this.dbClient.queryObject<DbPoll>`SELECT * FROM polls WHERE results_posted = false AND created_at < NOW() - INTERVAL '24 hours'`;
+        await this.dbClient.queryObject`UPDATE polls SET results_posted = true WHERE id = ANY(${polls.rows.map(p => p.id)})`;
+        for (const poll of polls.rows) {
+            let threadResp;
+            try {
+                threadResp = await this.agent?.api.app.bsky.feed.getPostThread({ uri: poll.post_uri });
+            } catch (e) {
+                log.error(e);
+                continue;
+            }
+            const thread = threadResp?.data.thread;
+            if (!thread || thread.notFound || !thread.post) {
+                continue;
+            }
+            const threadViewPost = thread as AppBskyFeedDefs.ThreadViewPost;
+            const post = threadViewPost.post;
+            const replyRef = { parent: { cid: post.cid, uri: post.uri }, root: { cid: post.cid, uri: post.uri } };
+            const createdAt = new Date().toISOString();
+            const postTemplate = generatePollResultsText(poll);
+            if (byteLength(postTemplate) > 300) {
+                continue;
+            }
+            try {
+                await this.agent?.api.app.bsky.feed.post.create(
+                    { repo: this.agent.session?.did },
+                    {
+                        text: postTemplate,
+                        reply: replyRef,
+                        createdAt
+                    })
+            } catch (e) {
+                log.error(e);
+                continue;
+            }
+        }
+    }
+
+    async postLegacyPolls() {
         const notifs = await this.getNotifications();
 
         for await (const notif of notifs) {
@@ -165,4 +226,28 @@ export class Bot {
         return { visibleId, createdAt };
     }
 
+}
+
+export function generatePollResultsText(poll: DbPoll): string {
+    const { question, answers, results: resultsWithAbstentions } = poll;
+    const results = resultsWithAbstentions.slice(1);
+    const total = results.reduce((a, b) => a + b);
+    const percentResults = results.map((r) => r / total);
+    const emojiNumbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
+    function progressBar(percent: number) {
+        const empty = '⬜️';
+        const fill = '🟦';
+        const filledBlocks = Math.round(percent * 10);
+        return `${fill.repeat(filledBlocks)}${empty.repeat(10 - filledBlocks)}`;
+    }
+    const lines = [
+        `Poll results after 24 hours: ${question}`,
+        '',
+        ...results.flatMap((_, i) => [
+            `${emojiNumbers[i]} ${answers[i]}`,
+            `${progressBar(percentResults[i])} (${results[i]})`,
+            ''
+        ]),
+    ];
+    return lines.join('\n').trim();
 }
