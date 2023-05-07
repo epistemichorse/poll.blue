@@ -22,25 +22,10 @@ export default function Home() {
             class="hover:underline text-blue-500"
           >
             @epistemic.horse
+          </a>. To make a poll, go to the{" "}
+          <a href="/post" class="hover:underline text-blue-500">
+            posting page
           </a>.
-        </p>
-        <p class="my-6 text-white">
-          To make a poll, make a new post with the following format:
-
-          <pre class="my-4 p-4 bg-gray-800 text-white rounded">
-            <code>
-              {'@poll.blue Question\n\n'+
-
-              'A. Option 1\n' +
-              'B. Option 2\n' +
-              'C. Option 3\n' +
-              'D. Option 4\n'}
-            </code>
-          </pre>
-        </p>
-        <p class="my-6 text-white">
-          The option list can be enumerated with uppercase letters, lowercase
-          letters or numbers. Polls can have between 2-4 options.
         </p>
         <p class="my-6 text-white">
           Duplicate votes are prevented by only allowing one vote per IP. This
