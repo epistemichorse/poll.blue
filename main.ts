@@ -11,15 +11,13 @@ import twindPlugin from "$fresh/plugins/twind.ts";
 import twindConfig from "./twind.config.ts";
 
 import { connectToDb } from './db.ts';
-import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
+import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
 import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
 import { setupBotClient } from "./bot-client.ts";
 
-const env = config();
+const env = await load();
 
-log.info("env", env);
-
-log.info("Running in env", env.ENV)
+log.info("Running in env " + env.ENV)
 
 await connectToDb();
 await setupBotClient();

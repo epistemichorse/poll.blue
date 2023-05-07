@@ -2,9 +2,9 @@ import {
     ClientPostgreSQL,
     NessieConfig,
 } from "https://deno.land/x/nessie@2.0.10/mod.ts";
-import { config as dotenv } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
+import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
 
-const env = dotenv({ path: './.prod.env' });
+const env = await load({ envPath: './.prod.env' });
 
 const client = new ClientPostgreSQL({
     database: "postgres",

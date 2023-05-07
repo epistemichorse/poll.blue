@@ -1,11 +1,11 @@
-import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
+import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
 import { Bot } from "./bot/bot.ts";
 import { getDbClient, connectToDb } from './db.ts';
 import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.2.3"
 import TTL from "https://deno.land/x/ttl/mod.ts";
 import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
 
-const env = config();
+const env = await load();
 
 let bot: Bot | undefined;
 

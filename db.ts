@@ -1,10 +1,10 @@
-import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
+import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
 import { Client } from "https://deno.land/x/postgres@v0.17.0/mod.ts";
 
 let client: Client;
 
 export async function connectToDb() {
-    const env = config();
+    const env = await load();
     client = new Client(
         {
             user: env.PG_USERNAME,

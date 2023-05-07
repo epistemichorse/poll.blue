@@ -53,12 +53,14 @@ export class Bot {
     }
 
     async runJobs() {
+        log.info("Running postResults")
         try {
             await this.postResults();
         } catch (e) {
             log.error(e);
         }
 
+        log.info("Running postLegacyPolls")
         try {
             await this.postLegacyPolls();
         } catch (e) {

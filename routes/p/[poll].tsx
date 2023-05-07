@@ -1,11 +1,11 @@
 import { PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers } from "$fresh/server.ts";
-import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
+import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
 import type { Results } from "./[poll]/results.ts";
 import { postUriToBskyLink } from "../../lib/poll-utils.ts";
 
-const hostname = config().LOCALHOST;
+const hostname = (await load()).LOCALHOST;
 
 export const handler: Handlers<Results | null> = {
   async GET(_, ctx) {

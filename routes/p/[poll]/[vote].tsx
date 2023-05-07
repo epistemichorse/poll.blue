@@ -1,8 +1,8 @@
 import { HandlerContext } from "$fresh/server.ts";
 import { getDbClient } from "../../../db.ts";
-import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
+import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
 
-const env = config().ENV;
+const env = (await load()).ENV;
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
