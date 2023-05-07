@@ -17,18 +17,11 @@ import { setupBotClient } from "./bot-client.ts";
 
 const env = config();
 
-const username = env["BSKY_USERNAME"];
-if (!username) {
-    throw new Error("BSKY_USERNAME not set");
-}
-const password = env["BSKY_PASSWORD"];
-if (!password) {
-    throw new Error("BSKY_PASSWORD not set");
-}
+log.info("env", env);
+
+log.info("Running in env", env.ENV)
 
 await connectToDb();
 await setupBotClient();
-
-log.info("Running in env", env.ENV)
 
 await start(manifest, { plugins: [twindPlugin(twindConfig)] });

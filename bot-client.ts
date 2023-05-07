@@ -3,6 +3,7 @@ import { Bot } from "./bot/bot.ts";
 import { getDbClient, connectToDb } from './db.ts';
 import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.2.3"
 import TTL from "https://deno.land/x/ttl/mod.ts";
+import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
 
 const env = config();
 
@@ -10,6 +11,7 @@ let bot: Bot | undefined;
 
 export async function setupBotClient() {
     if (env.ENV !== "prod") {
+        log.info("Skipping bot initialization, not in prod");
         return;
     }
     const username = env["BSKY_USERNAME"];
