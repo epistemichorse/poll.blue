@@ -37,13 +37,13 @@ export default function PostPoll() {
         <form class="px-8 pt-6 pb-8 mb-4" onSubmit={(evt) => postPoll(evt)}>
           <div class="mb-4">
             <label
-              class="block text-gray-700 text-sm font-bold mb-2"
+              class="block text-gray-400 text-sm font-bold mb-2"
               for="handle"
             >
               Handle (without the @)
             </label>
             <input
-              class="appearance-none border rounded mb-2 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              class="appearance-none border rounded mb-2 w-full py-2 px-3 text-gray-400 leading-tight focus:outline-none focus:shadow-outline"
               id="handle"
               type="text"
               value={handle}
@@ -56,13 +56,13 @@ export default function PostPoll() {
           </div>
           <div class="mb-4">
             <label
-              class="block text-gray-700 text-sm font-bold mb-2"
+              class="block text-gray-400 text-sm font-bold mb-2"
               for="token"
             >
               Password (not your main password pls)
             </label>
             <input
-              class="appearance-none border rounded mb-2 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              class="appearance-none border rounded mb-2 w-full py-2 px-3 text-gray-400 leading-tight focus:outline-none focus:shadow-outline"
               id="token"
               type="password"
               value={password}
@@ -75,13 +75,13 @@ export default function PostPoll() {
           </div>
           <div class="mb-4">
             <label
-              class="block text-gray-700 text-sm font-bold mb-2"
+              class="block text-gray-400 text-sm font-bold mb-2"
               for="handle"
             >
               Question
             </label>
             <input
-              class="appearance-none border rounded mb-2 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              class="appearance-none border rounded mb-2 w-full py-2 px-3 text-gray-400 leading-tight focus:outline-none focus:shadow-outline"
               id="question"
               type="text"
               value={question}
@@ -95,13 +95,13 @@ export default function PostPoll() {
           {options.map((option, i) => (
             <div class="mb-4">
               <label
-                class="block text-gray-700 text-sm font-bold mb-2"
+                class="block text-gray-400 text-sm font-bold mb-2"
                 for={"option" + i}
               >
                 Option {i + 1}
               </label>
               <input
-                class="appearance-none border rounded mb-2 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="appearance-none border rounded mb-2 w-full py-2 px-3 text-gray-400 leading-tight focus:outline-none focus:shadow-outline"
                 id={"option" + i}
                 type="text"
                 value={options[i]}
