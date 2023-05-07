@@ -1,5 +1,5 @@
 import { HandlerContext } from "$fresh/server.ts";
-import { getClient } from "../../../db.ts";
+import { getDbClient } from "../../../db.ts";
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 
 const env = config().ENV;
@@ -9,7 +9,7 @@ function sleep(ms: number) {
 }
 
 async function vote(ipString: string, poll: string, vote: string) {
-  const client = getClient();
+  const client = getDbClient();
   const ip = ipToInt(ipString);
   const retries = 5;
   let pollResult;

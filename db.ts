@@ -20,7 +20,7 @@ export async function connectToDb() {
     await client.connect();
 }
 
-export function getClient(): Client {
+export function getDbClient(): Client {
     return client;
 }
 

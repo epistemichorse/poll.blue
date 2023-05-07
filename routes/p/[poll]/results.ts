@@ -1,5 +1,5 @@
 import { HandlerContext } from "$fresh/server.ts";
-import { getClient } from '../../../db.ts';
+import { getDbClient } from '../../../db.ts';
 
 export interface Results {
     post_uri?: string;
@@ -11,7 +11,7 @@ export interface Results {
 }
 
 export const handler = async (_req: Request, ctx: HandlerContext): Promise<Response> => {
-    const client = getClient();
+    const client = getDbClient();
     const visibleId = ctx.params.poll;
     const queryResult = await client.queryObject`SELECT posted_by, created_at, post_uri, question, answers, results FROM polls WHERE visible_id = ${visibleId}`;
     if (queryResult.rows.length === 0) {

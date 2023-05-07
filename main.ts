@@ -10,12 +10,10 @@ import manifest from "./fresh.gen.ts";
 import twindPlugin from "$fresh/plugins/twind.ts";
 import twindConfig from "./twind.config.ts";
 
-import { getClient, connectToDb } from './db.ts';
-import { Bot } from "./bot/bot.ts";
-import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.2.3"
+import { connectToDb } from './db.ts';
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
-import TTL from "https://deno.land/x/ttl/mod.ts";
+import { setupBotClient } from "./bot-client.ts";
 
 const env = config();
 
@@ -28,26 +26,9 @@ if (!password) {
     throw new Error("BSKY_PASSWORD not set");
 }
 
-connectToDb();
+await connectToDb();
+await setupBotClient();
 
 log.info("Running in env", env.ENV)
-
-if (env.ENV === "prod") {
-    const bot = new Bot({
-        username,
-        password,
-        dbClient: getClient(),
-        postUriCache: new TTL(1000 * 60 * 60 * 24)
-    });
-    await bot.setupAgent(new Agent({ service: "https://bsky.social" }));
-
-    setInterval(async () => {
-        try {
-            await bot.runJobs();
-        } catch (e) {
-            console.error(e);
-        }
-    }, 10 * 1000)
-}
 
 await start(manifest, { plugins: [twindPlugin(twindConfig)] });

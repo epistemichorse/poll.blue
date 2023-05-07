@@ -1,11 +1,12 @@
 import { HandlerContext } from "$fresh/server.ts";
-import { getClient } from '../db.ts';
+import { getDbClient } from '../db.ts';
+import { getBotClient } from '../bot-client.ts';
 import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
 import { Poll, generateId, generatePollText } from "../lib/poll-utils.ts";
 import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.2.3"
 
 export const handler = async (req: Request, _ctx: HandlerContext): Promise<Response> => {
-    const client = getClient();
+    const client = getDbClient();
     const body: any = (await req?.json());
     const poll = body as Poll;
     const author = body.handle as string;
@@ -56,8 +57,9 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
         }), { status: 500 });
     }
     let postUri = null;
+    let createdPost: { uri: string, cid: string } | undefined;
     try {
-        const createdPost = await agent?.api.app.bsky.feed.post.create(
+        createdPost = await agent?.api.app.bsky.feed.post.create(
             { repo: agent.session?.did },
             {
                 text: postTemplate,
@@ -80,6 +82,20 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
             "ok": false,
             "error": "failed to insert poll into db"
         }), { status: 500 });
+    }
+    likeAndRepost: try {
+        const botClient = getBotClient();
+        if (!botClient || !createdPost) {
+            break likeAndRepost;
+        }
+        const replyRef = {
+            parent: { cid: createdPost.cid, uri: createdPost.uri, },
+            root: { cid: createdPost.cid, uri: createdPost.uri, }
+        };
+        await botClient?.likePost(replyRef);
+        await botClient?.repost(replyRef);
+    } catch (e) {
+        log.error(e);
     }
     return new Response(JSON.stringify({
         "ok": postTemplate,

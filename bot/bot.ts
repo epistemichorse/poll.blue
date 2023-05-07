@@ -1,4 +1,4 @@
-import { default as Agent, AppBskyNotificationListNotifications, AppBskyFeedPost, AppBskyFeedDefs } from "https://esm.sh/v115/@atproto/api@0.2.3"
+import { default as Agent, AppBskyNotificationListNotifications, AppBskyFeedPost, AppBskyFeedDefs, AppBskyFeedLike } from "https://esm.sh/v115/@atproto/api@0.2.3"
 import { Client } from "https://deno.land/x/postgres@v0.17.0/mod.ts";
 import TTL from "https://deno.land/x/ttl/mod.ts";
 import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
@@ -226,6 +226,27 @@ export class Bot {
         return { visibleId, createdAt };
     }
 
+    likePost(replyRef: AppBskyFeedPost.ReplyRef): Promise<{ uri: string; cid: string; }> | undefined {
+        const createdAt = (new Date()).toISOString();
+        return this.agent?.api.app.bsky.feed.like.create(
+            { repo: this.agent.session?.did },
+            {
+                subject: { uri: replyRef.parent.uri, cid: replyRef.parent.cid },
+                createdAt
+            }
+        );
+    }
+
+    repost(replyRef: AppBskyFeedPost.ReplyRef): Promise<{ uri: string; cid: string; }> | undefined {
+        const createdAt = (new Date()).toISOString();
+        return this.agent?.api.app.bsky.feed.repost.create(
+            { repo: this.agent.session?.did },
+            {
+                subject: { uri: replyRef.parent.uri, cid: replyRef.parent.cid },
+                createdAt
+            }
+        );
+    }
 }
 
 export function generatePollResultsText(poll: DbPoll): string {
