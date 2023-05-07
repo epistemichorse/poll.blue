@@ -27,12 +27,20 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
     poll.enumeration = "number";
     const visibleId = generateId(6);
     const results = poll.answers.map(() => 0).concat([0]);
-    const [postTemplate, links] = generatePollText({
-        visibleId,
-        poll,
-        author,
-        pollStyle: 'plain'
-    });
+    let postTemplate, links;
+    try {
+        [postTemplate, links] = generatePollText({
+            visibleId,
+            poll,
+            author,
+            pollStyle: 'plain'
+        });
+    } catch (e) {
+        return new Response(JSON.stringify({
+            "ok": false,
+            "error": "poll too long",
+        }), { status: 400, headers: { "Content-Type": "application/json" } });
+    }
     const createdAt = (new Date()).toISOString();
     const agent = new Agent({ service: "https://bsky.social" });
     try {
@@ -74,6 +82,7 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
         }), { status: 500 });
     }
     return new Response(JSON.stringify({
-        "ok": postTemplate
+        "ok": postTemplate,
+        "post_uri": postUri,
     }));
 };

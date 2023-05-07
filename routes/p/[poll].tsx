@@ -3,6 +3,7 @@ import { Head } from "$fresh/runtime.ts";
 import { Handlers } from "$fresh/server.ts";
 import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 import type { Results } from "./[poll]/results.ts";
+import { postUriToBskyLink } from "../../lib/poll-utils.ts";
 
 const hostname = config().LOCALHOST;
 
@@ -17,15 +18,6 @@ export const handler: Handlers<Results | null> = {
     return ctx.render(results);
   },
 };
-
-function postUriToBskyLink(postUri?: string) {
-  if (!postUri) {
-    return "";
-  }
-  // at://did:plc:hxqb73a2mcqwgyg64ibvw7ts/app.bsky.feed.post/3jtiwzc4lfh2o
-  const [did, , post] = postUri.split("/").slice(-3);
-  return `https://staging.bsky.app/profile/${did}/post/${post}`;
-}
 
 export default function Home(props: PageProps<Results>) {
   if (!props.data) {

@@ -86,6 +86,15 @@ function buildTemplate(template: Template[]): [string, AppBskyRichtextFacet.Main
     return [text, links];
 }
 
-function byteLength(s: string): number {
+export function byteLength(s: string): number {
     return (new TextEncoder().encode(s)).length
+}
+
+export function postUriToBskyLink(postUri: string) {
+    if (!postUri) {
+        return "";
+    }
+    // at://did:plc:hxqb73a2mcqwgyg64ibvw7ts/app.bsky.feed.post/3jtiwzc4lfh2o
+    const [did, , post] = postUri.split("/").slice(-3);
+    return `https://staging.bsky.app/profile/${did}/post/${post}`;
 }

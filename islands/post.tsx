@@ -1,11 +1,12 @@
 import { useState } from "preact/hooks";
+import { postUriToBskyLink } from "../lib/poll-utils.ts";
 
 export default function PostPoll() {
   const [handle, setHandle] = useState("");
   const [password, setPassword] = useState("");
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
-  const [hasPosted, setHasPosted] = useState(false);
+  const [postUri, setPostUri] = useState("");
   const [error, setError] = useState("");
   async function postPoll(evt: Event) {
     evt.preventDefault();
@@ -19,10 +20,10 @@ export default function PostPoll() {
       }),
     });
     if (response.status === 200) {
-      setHasPosted(true);
+      setPostUri((await response.json()).post_uri);
       setError("");
     } else {
-      setHasPosted(false);
+      setPostUri("");
       setError(await response.json());
     }
   }
@@ -117,17 +118,23 @@ export default function PostPoll() {
           ))}
           {options.filter((opt) => opt != "").length >= 2 &&
             (
-              <div class="p-4 my-4 text-xl bg-gray-400 rounded">
+              <div
+                class="p-4 my-4 text-xl bg-gray-400 rounded"
+                style="overflow-wrap: break-word"
+              >
                 <p class="mb-6">
                   {question}
                 </p>
                 <ol>
-                  {options.filter((opt) => opt != "").map((opt) => (
-                    <li class="list-decimal list-inside">
-                      {opt}
+                  {options.filter((opt) => opt != "").map((opt, idx) => (
+                    <li>
+                      {["1️⃣", "2️⃣", "3️⃣", "4️⃣"][idx]} {opt}
                     </li>
                   ))}
                 </ol>
+                <p class="mt-6">
+                  📊 Show results
+                </p>
               </div>
             )}
           <div class="flex items-center justify-between">
@@ -141,10 +148,15 @@ export default function PostPoll() {
               Post poll
             </button>
           </div>
-          {hasPosted && (
+          {postUri && (
             <div class="my-6 p-4 mx-auto max-w-screen-md bg-green-500 rounded">
               <p class="text-center text-xl">
-                Poll posted!
+                <a
+                  class="hover:underline text-blue-800"
+                  href={postUriToBskyLink(postUri)}
+                >
+                  Poll posted!
+                </a>
               </p>
             </div>
           )}
