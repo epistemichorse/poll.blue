@@ -90,10 +90,6 @@ export class Bot {
             const replyRef = { parent: { cid: post.cid, uri: post.uri }, root: { cid: post.cid, uri: post.uri } };
             const createdAt = new Date().toISOString();
             const postTemplate = generatePollResultsText(poll);
-            if (byteLength(postTemplate) > 300) {
-                log.warning(`Poll results post too long: ${byteLength(postTemplate)} bytes`);
-                continue;
-            }
             try {
                 await this.agent?.api.app.bsky.feed.post.create(
                     { repo: this.agent.session?.did },
@@ -259,18 +255,19 @@ export function generatePollResultsText(poll: DbPoll): string {
     const results = resultsWithAbstentions.slice(1);
     const total = results.reduce((a, b) => a + b);
     const percentResults = results.map((r) => r / total);
+    const emojiNumbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
     function progressBar(percent: number) {
-        const empty = '·️';
-        const fill = '=';
+        const empty = '⬜️';
+        const fill = '🟦';
         const filledBlocks = Math.round(percent * 10);
         return `${fill.repeat(filledBlocks)}${empty.repeat(10 - filledBlocks)}`;
     }
     const lines = [
-        `Results: ${question}`,
+        `Poll results after 24 hours: ${question}`,
         '',
         ...results.flatMap((_, i) => [
-            `${answers[i]}`,
-            `[${progressBar(percentResults[i])}] (${results[i]})`,
+            `${emojiNumbers[i]} ${answers[i]}`,
+            `${progressBar(percentResults[i])} (${results[i]})`,
             ''
         ]),
     ];

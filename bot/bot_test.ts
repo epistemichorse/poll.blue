@@ -156,20 +156,19 @@ Deno.test("truncates long polls", async () => {
 
 Deno.test("creates poll results", () => {
     const text = generatePollResultsText({ question: 'test', answers: ["option 1", "option 2", "option 3", "option 4"], results: [90, 1, 2, 3, 7] } as DbPoll)
-    console.log(text);
-    const expected = `Results: test
+    const expected = `Poll results after 24 hours: test
 
-option 1
-[=·️·️·️·️·️·️·️·️·️] (1)
+1️⃣ option 1
+🟦⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️ (1)
 
-option 2
-[==·️·️·️·️·️·️·️·️] (2)
+2️⃣ option 2
+🟦🟦⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️ (2)
 
-option 3
-[==·️·️·️·️·️·️·️·️] (3)
+3️⃣ option 3
+🟦🟦⬜️⬜️⬜️⬜️⬜️⬜️⬜️⬜️ (3)
 
-option 4
-[=====·️·️·️·️·️] (7)`;
+4️⃣ option 4
+🟦🟦🟦🟦🟦⬜️⬜️⬜️⬜️⬜️ (7)`;
 
     assertEquals(text, expected);
 });
