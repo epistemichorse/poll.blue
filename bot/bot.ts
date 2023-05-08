@@ -90,10 +90,6 @@ export class Bot {
             const replyRef = { parent: { cid: post.cid, uri: post.uri }, root: { cid: post.cid, uri: post.uri } };
             const createdAt = new Date().toISOString();
             const postTemplate = generatePollResultsText(poll);
-            if (byteLength(postTemplate) > 300) {
-                log.warning(`Poll results post too long: ${byteLength(postTemplate)} bytes`);
-                continue;
-            }
             try {
                 await this.agent?.api.app.bsky.feed.post.create(
                     { repo: this.agent.session?.did },
