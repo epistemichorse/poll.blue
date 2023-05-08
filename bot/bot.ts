@@ -72,6 +72,7 @@ export class Bot {
         const polls = await this.dbClient.queryObject<DbPoll>`SELECT * FROM polls WHERE results_posted = false AND created_at < NOW() - INTERVAL '24 hours'`;
         await this.dbClient.queryObject`UPDATE polls SET results_posted = true WHERE id = ANY(${polls.rows.map(p => p.id)})`;
         for (const poll of polls.rows) {
+            log.info(`Posting results for poll ${poll.id}`);
             let threadResp;
             try {
                 threadResp = await this.agent?.api.app.bsky.feed.getPostThread({ uri: poll.post_uri });
@@ -81,6 +82,7 @@ export class Bot {
             }
             const thread = threadResp?.data.thread;
             if (!thread || thread.notFound || !thread.post) {
+                log.warning(`post not found: ${poll.post_uri}`);
                 continue;
             }
             const threadViewPost = thread as AppBskyFeedDefs.ThreadViewPost;
@@ -89,6 +91,7 @@ export class Bot {
             const createdAt = new Date().toISOString();
             const postTemplate = generatePollResultsText(poll);
             if (byteLength(postTemplate) > 300) {
+                log.warning(`Poll results post too long: ${byteLength(postTemplate)} bytes`);
                 continue;
             }
             try {

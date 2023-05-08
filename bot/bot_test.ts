@@ -156,7 +156,6 @@ Deno.test("truncates long polls", async () => {
 
 Deno.test("creates poll results", () => {
     const text = generatePollResultsText({ question: 'test', answers: ["option 1", "option 2", "option 3", "option 4"], results: [90, 1, 2, 3, 7] } as DbPoll)
-    console.log(text);
     const expected = `Poll results after 24 hours: test
 
 1️⃣ option 1
