@@ -60,10 +60,10 @@ export function generatePollText(options: GenerationOptions): [string, AppBskyRi
     postTemplate.push({ text: `\n`, link: undefined, truncate: 'no' });
     postTemplate.push({ text: `📊 Show results`, link: `https://poll.blue/p/${visibleId}/0`, truncate: 'no' });
     let [text, links] = buildTemplate(postTemplate);
-    if (text.length > 300) {
+    if (!postLengthValid(text)) {
         [text, links] = buildTemplate(postTemplate.filter(t => t.truncate === 'no'))
     }
-    if (text.length > 300) {
+    if (!postLengthValid(text)) {
         throw new Error(`post too long: ${text.length} bytes`)
     }
     return [text, links];
@@ -97,4 +97,14 @@ export function postUriToBskyLink(postUri: string) {
     // at://did:plc:hxqb73a2mcqwgyg64ibvw7ts/app.bsky.feed.post/3jtiwzc4lfh2o
     const [did, , post] = postUri.split("/").slice(-3);
     return `https://staging.bsky.app/profile/${did}/post/${post}`;
+}
+
+export function postLengthValid(text: string): boolean {
+    if (byteLength(text) > 3000) {
+        return false;
+    }
+    if ([...new Intl.Segmenter().segment(text)].length > 300) {
+        return false;
+    }
+    return true;
 }

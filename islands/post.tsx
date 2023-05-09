@@ -10,13 +10,14 @@ export default function PostPoll() {
   const [error, setError] = useState("");
   async function postPoll(evt: Event) {
     evt.preventDefault();
-    const response = await fetch("/post-poll", {
+    const response = await fetch("/api/poll", {
       method: "POST",
       body: JSON.stringify({
         handle,
         password,
         question,
         answers: options.filter((opt) => opt != ""),
+        user_agent: "poll.blue",
       }),
     });
     if (response.status === 200) {

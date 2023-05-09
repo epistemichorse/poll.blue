@@ -10,7 +10,10 @@ export interface Results {
     results: number[]
 }
 
-export const handler = async (_req: Request, ctx: HandlerContext): Promise<Response> => {
+export const handler = async (req: Request, ctx: HandlerContext): Promise<Response> => {
+    if (req.method !== "GET") {
+        return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 });
+    }
     const client = getDbClient();
     const visibleId = ctx.params.poll;
     const queryResult = await client.queryObject`SELECT posted_by, created_at, post_uri, question, answers, results FROM polls WHERE visible_id = ${visibleId}`;
