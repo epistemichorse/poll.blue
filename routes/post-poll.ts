@@ -75,7 +75,7 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
         }), { status: 500 });
     }
     try {
-        await client.queryObject`INSERT INTO polls (posted_by, post_uri, question, answers, results, visible_id) VALUES (${author}, ${postUri}, ${poll.question}, ${JSON.stringify(poll.answers)}, ${JSON.stringify(results)}, ${visibleId})`;
+        await client.queryObject`INSERT INTO polls (posted_by, post_uri, question, answers, results, visible_id, results_posted) VALUES (${author}, ${postUri}, ${poll.question}, ${JSON.stringify(poll.answers)}, ${JSON.stringify(results)}, ${visibleId}, ${false})`;
     } catch (e) {
         log.error(e);
         return new Response(JSON.stringify({
