@@ -1,34 +1,32 @@
-import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
 import { Bot } from "./bot/bot.ts";
-import { getDbClient, connectToDb } from './db.ts';
+import { getDbClient } from './db.ts';
 import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.2.3"
-import TTL from "https://deno.land/x/ttl/mod.ts";
-import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
-
-const env = await load();
+import TTL from "https://deno.land/x/ttl@1.0.1/mod.ts";
+import { getConfig } from "./config.ts";
+import { MockBsky } from "./mock-bsky.ts";
 
 let bot: Bot | undefined;
 
-export async function setupBotClient() {
-    if (env.ENV !== "prod") {
-        log.info("Skipping bot initialization, not in prod");
+interface SetupBotSettings {
+    host: string;
+    username: string;
+    password: string;
+}
+
+export async function setupBotClient(settings: SetupBotSettings) {
+    if (getConfig('ENV') === 'dev') {
+        const mock = new MockBsky();
+        mock.listen(8002);
         return;
     }
-    const username = env["BSKY_USERNAME"];
-    if (!username) {
-        throw new Error("BSKY_USERNAME not set");
-    }
-    const password = env["BSKY_PASSWORD"];
-    if (!password) {
-        throw new Error("BSKY_PASSWORD not set");
-    }
+    const { host, username, password } = settings;
     bot = new Bot({
         username,
         password,
         dbClient: getDbClient(),
         postUriCache: new TTL(1000 * 60 * 60 * 24)
     });
-    await bot.setupAgent(new Agent({ service: "https://bsky.social" }));
+    await bot.setupAgent(new Agent({ service: host }));
     setInterval(async () => {
         try {
             await bot?.runJobs();

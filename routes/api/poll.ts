@@ -5,6 +5,7 @@ import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
 import { generateId, generatePollText } from "../../lib/poll-utils.ts";
 import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.2.3"
 import { z } from "https://deno.land/x/zod@v3.16.1/mod.ts";
+import { getConfig } from "../../config.ts";
 
 const postPollSchema = z.object({
     question: z.string().min(1).max(200),
@@ -19,11 +20,10 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
         return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 });
     }
     const client = getDbClient();
-    const body: any = (await req?.json());
+    const body: any = (await req.json());
     const pollParse = postPollSchema.safeParse(body);
     if (!pollParse.success) {
         return new Response(JSON.stringify({
-            "ok": false,
             "error": pollParse.error.format()
         }), { status: 400 });
     }
@@ -41,12 +41,11 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
         });
     } catch {
         return new Response(JSON.stringify({
-            "ok": false,
             "error": "poll too long",
         }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
     const createdAt = (new Date()).toISOString();
-    const agent = new Agent({ service: "https://bsky.social" });
+    const agent = new Agent({ service: getConfig('BSKY_HOST') });
     try {
         await agent.login({
             identifier: handle,
@@ -55,7 +54,6 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
     } catch (e) {
         log.error(e);
         return new Response(JSON.stringify({
-            "ok": false,
             "error": "invalid bsky credentials",
         }), { status: 400 });
     }
@@ -73,7 +71,6 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
     } catch (e) {
         log.error(e);
         return new Response(JSON.stringify({
-            "ok": false,
             "error": "failed to post poll to bsky",
         }), { status: 500 });
     }
@@ -98,7 +95,6 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
     } catch (e) {
         log.error(e);
         return new Response(JSON.stringify({
-            "ok": false,
             "error": "failed to insert poll into db"
         }), { status: 500 });
     }
@@ -117,7 +113,7 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
         log.error(e);
     }
     return new Response(JSON.stringify({
-        "ok": postTemplate,
+        "id": visibleId,
         "post_uri": postUri,
     }));
 };

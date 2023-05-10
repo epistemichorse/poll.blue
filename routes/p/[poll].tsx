@@ -1,16 +1,14 @@
 import { PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers } from "$fresh/server.ts";
-import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
 import type { Results } from "../api/poll/[poll].ts";
 import { postUriToBskyLink } from "../../lib/poll-utils.ts";
-
-const hostname = (await load()).LOCALHOST;
+import { getConfig } from "../../config.ts";
 
 export const handler: Handlers<Results | null> = {
   async GET(_, ctx) {
     const { poll } = ctx.params;
-    const resp = await fetch(`${hostname}/api/poll/${poll}`);
+    const resp = await fetch(`${getConfig("LOCALHOST")}/api/poll/${poll}`);
     if (resp.status === 404) {
       return ctx.render(null);
     }

@@ -14,7 +14,9 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno test
+      - run: deno test --allow-env
+        env:
+          INTEGRATION_TESTS: true
       - run: |
           cat << EOF > .prod.env
           ENV=prod
@@ -25,6 +27,7 @@ jobs:
           PG_USERNAME=postgres
           PG_PASSWORD=${{ secrets.PG_PASSWORD }}
           PG_HOST=poll-blue-db.internal
+          PG_DATABASE=postgres
           EOF
       - run: flyctl deploy --remote-only
         env:

@@ -1,16 +1,21 @@
-import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
 import { Client } from "https://deno.land/x/postgres@v0.17.0/mod.ts";
 
 let client: Client;
 
-export async function connectToDb() {
-    const env = await load();
+interface DbSettings {
+    user: string;
+    password: string;
+    database: string;
+    hostname: string;
+}
+
+export async function connectToDb(settings: DbSettings) {
     client = new Client(
         {
-            user: env.PG_USERNAME,
-            password: env.PG_PASSWORD,
-            database: "postgres",
-            hostname: env.PG_HOST,
+            user: settings.user,
+            password: settings.password,
+            database: settings.database,
+            hostname: settings.hostname,
             port: 5432,
             connection: {
                 attempts: 5,
@@ -20,8 +25,10 @@ export async function connectToDb() {
     await client.connect();
 }
 
+export async function closeDbConnection() {
+    await client.end();
+}
+
 export function getDbClient(): Client {
     return client;
 }
-
-connectToDb();

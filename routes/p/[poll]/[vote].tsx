@@ -1,8 +1,6 @@
 import { HandlerContext } from "$fresh/server.ts";
+import { getConfig } from "../../../config.ts";
 import { getDbClient } from "../../../db.ts";
-import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
-
-const env = (await load()).ENV;
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -59,7 +57,7 @@ function ipToInt(ip: string): number {
 }
 
 function getIp(req: Request): string | undefined {
-  if (env === "dev") {
+  if (getConfig("ENV") === "dev") {
     // random IPv4 address
     const octets = [];
     for (let i = 0; i < 4; i++) {

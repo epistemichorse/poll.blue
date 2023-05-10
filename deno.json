@@ -6,6 +6,7 @@
     "esm:update": "deno run -A https://esm.sh/v115 update",
     "esm:remove": "deno run -A https://esm.sh/v115 remove",
     "nessie:local": "deno run -A --unstable https://deno.land/x/nessie/cli.ts -c ./nessie.config.ts",
+    "nessie:test": "deno run -A --unstable https://deno.land/x/nessie/cli.ts -c ./nessie.test.config.ts",
     "nessie:prod": "deno run -A --unstable https://deno.land/x/nessie/cli.ts -c ./nessie.prod.config.ts",
     "proxy-db:prod": "fly proxy -a poll-blue-db 6432:5432",
     "psql:prod": "PGPASSWORD=$(cat .prod.env | grep PG_PASSWORD= | sed 's/.*=//') psql --port 6432 --username postgres --host localhost postgres",
