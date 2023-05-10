@@ -8,11 +8,25 @@ jobs:
   test:
     name: Run tests
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: postgres        
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ''
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno test --allow-env
+      - run: deno test --allow-env --unstable
         env:
           INTEGRATION_TESTS: true
