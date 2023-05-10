@@ -1,11 +1,11 @@
 import { HandlerContext } from "$fresh/server.ts";
-import { getDbClient } from '../../db.ts';
-import { getBotClient } from '../../bot-client.ts';
+import { getDbClient } from '../../app/db.ts';
+import { getBotClient } from '../../app/bot-client.ts';
 import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
-import { generateId, generatePollText } from "../../lib/poll-utils.ts";
+import { generateId, generatePollText } from "../../app/poll-utils.ts";
 import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.2.3"
 import { z } from "https://deno.land/x/zod@v3.16.1/mod.ts";
-import { getConfig } from "../../config.ts";
+import { getConfig } from "../../app/config.ts";
 
 const postPollSchema = z.object({
     question: z.string().min(1).max(200),

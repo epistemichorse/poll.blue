@@ -1,5 +1,5 @@
 import { HandlerContext } from "$fresh/server.ts";
-import { getDbClient } from '../../../db.ts';
+import { getDbClient } from '../../../app/db.ts';
 
 export interface Results {
     post_uri?: string;

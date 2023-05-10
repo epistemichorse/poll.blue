@@ -14,7 +14,7 @@ import {
     spy,
     Spy
 } from "https://deno.land/std@0.177.0/testing/mock.ts";
-import TTL from "https://deno.land/x/ttl/mod.ts";
+import TTL from "https://deno.land/x/ttl@1.0.1/mod.ts";
 
 function fakeAgent(): Agent {
     return {

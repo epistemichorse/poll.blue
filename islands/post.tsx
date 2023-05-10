@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { postUriToBskyLink } from "../lib/poll-utils.ts";
+import { postUriToBskyLink } from "../app/poll-utils.ts";
 
 export default function PostPoll() {
   const [handle, setHandle] = useState("");

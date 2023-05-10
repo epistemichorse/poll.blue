@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.178.0/http/server.ts";
-import { generateId } from "./lib/poll-utils.ts";
+import { generateId } from "./poll-utils.ts";
 
 export class MockBsky {
     abortController: AbortController = new AbortController();
@@ -11,7 +11,6 @@ export class MockBsky {
         const handler = (request: Request): Response => {
             const url = new URL(request.url);
             this.calls.push(url.pathname);
-            console.log(url.pathname);
             if (url.pathname === '/xrpc/com.atproto.server.createSession') {
                 return new Response(JSON.stringify({
                     "accessJwt": 'dummy',

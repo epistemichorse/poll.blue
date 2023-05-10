@@ -1,14 +1,14 @@
 import { ClientPostgreSQL } from "https://deno.land/x/nessie@2.0.10/mod.ts";
 import { FileEntryT } from "https://deno.land/x/nessie@2.0.10/types.ts";
 import { resolve } from "https://deno.land/std@0.185.0/path/mod.ts";
-import { closeDbConnection, connectToDb } from "../db.ts";
+import { closeDbConnection, connectToDb } from "../app/db.ts";
 import { start } from "$fresh/server.ts";
 import manifest from "../fresh.gen.ts";
 import twindPlugin from "$fresh/plugins/twind.ts";
 import twindConfig from "../twind.config.ts";
 import { sleep } from "https://deno.land/x/sleep@v1.2.1/mod.ts";
-import { MockBsky } from '../mock-bsky.ts';
-import { loadConfigFromEnv, setConfig } from "../config.ts";
+import { MockBsky } from '../app/mock-bsky.ts';
+import { loadConfigFromEnv, setConfig } from "../app/config.ts";
 import { assertEquals, assertExists } from "https://deno.land/std@0.160.0/testing/asserts.ts";
 
 const TEST_DB_NAME = "poll_blue_test";
@@ -75,7 +75,6 @@ Deno.test({
             assertEquals(json.results, [0, 0, 0]);
             assertEquals(json.posted_by, 'test.poll.blue');
             assertExists(json.created_at);
-            console.log(json);
         });
 
         abortServer.abort();

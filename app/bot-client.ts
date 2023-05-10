@@ -1,4 +1,4 @@
-import { Bot } from "./bot/bot.ts";
+import { Bot } from "./bot.ts";
 import { getDbClient } from './db.ts';
 import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.2.3"
 import TTL from "https://deno.land/x/ttl@1.0.1/mod.ts";

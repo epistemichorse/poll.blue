@@ -2,8 +2,8 @@ import { PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import { Handlers } from "$fresh/server.ts";
 import type { Results } from "../api/poll/[poll].ts";
-import { postUriToBskyLink } from "../../lib/poll-utils.ts";
-import { getConfig } from "../../config.ts";
+import { postUriToBskyLink } from "../../app/poll-utils.ts";
+import { getConfig } from "../../app/config.ts";
 
 export const handler: Handlers<Results | null> = {
   async GET(_, ctx) {

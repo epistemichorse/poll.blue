@@ -5,10 +5,10 @@
 /// <reference lib="deno.ns" />
 
 import { start } from "$fresh/server.ts";
-import manifest from "./fresh.gen.ts";
+import manifest from "../fresh.gen.ts";
 
 import twindPlugin from "$fresh/plugins/twind.ts";
-import twindConfig from "./twind.config.ts";
+import twindConfig from "../twind.config.ts";
 
 import { connectToDb } from './db.ts';
 import * as log from "https://deno.land/std@0.183.0/log/mod.ts";

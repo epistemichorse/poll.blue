@@ -2,7 +2,7 @@ import { default as Agent, AppBskyNotificationListNotifications, AppBskyFeedPost
 import { Client } from "https://deno.land/x/postgres@v0.17.0/mod.ts";
 import TTL from "https://deno.land/x/ttl@1.0.1/mod.ts";
 import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
-import { Enumeration, Poll, generateId, generatePollText } from "../lib/poll-utils.ts";
+import { Enumeration, Poll, generateId, generatePollText } from "./poll-utils.ts";
 
 // lord forgive me
 const pollRegexes: [Enumeration, RegExp][] = [

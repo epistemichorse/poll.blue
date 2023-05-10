@@ -1,6 +1,6 @@
 import { HandlerContext } from "$fresh/server.ts";
-import { getConfig } from "../../../config.ts";
-import { getDbClient } from "../../../db.ts";
+import { getConfig } from "../../../app/config.ts";
+import { getDbClient } from "../../../app/db.ts";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
