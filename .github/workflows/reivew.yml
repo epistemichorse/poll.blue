@@ -13,7 +13,6 @@ jobs:
         image: postgres
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_HOST: localhost 
         ports:
           - 5432:5432
         options: >-
@@ -29,3 +28,5 @@ jobs:
       - run: deno test -A --unstable
         env:
           INTEGRATION_TESTS: true
+          POSTGRES_HOST: localhost 
+          POSTGRES_PASSWORD: postgres
