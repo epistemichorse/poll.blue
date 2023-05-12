@@ -205,14 +205,14 @@ export class Bot {
         }
         this.postUriCache.set(replyRef.parent.uri, true);
         log.info(`posted poll ${visibleId} by @${author} at ${postUri}`);
-        const [postTemplate, links] = generatePollText({ visibleId, poll, replyRef, author, pollStyle: 'bot' });
+        const { text, links, pollFacets } = generatePollText({ visibleId, poll, replyRef, author, pollStyle: 'bot' });
         await Promise.all([
             this.agent?.api.app.bsky.feed.post.create(
                 { repo: this.agent.session?.did },
                 {
-                    text: postTemplate,
+                    text: text,
                     reply: replyRef,
-                    facets: links,
+                    facets: [...links, ...pollFacets],
                     createdAt
                 })
             ,

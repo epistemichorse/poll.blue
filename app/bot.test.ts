@@ -131,6 +131,11 @@ Deno.test("posts polls", async () => {
                         { index: { byteStart: 84, byteEnd: 92 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/3` }] },
                         { index: { byteStart: 98, byteEnd: 110 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/4` }] },
                         { index: { byteStart: 112, byteEnd: 129 }, features: [{ $type: "app.bsky.richtext.facet#link", uri: `https://poll.blue/p/${id}/0` }] },
+                        { features: [{ "$type": "app.pollblue.poll.facet#question", },], index: { byteEnd: 10, byteStart: 0, }, },
+                        { features: [{ "$type": "app.pollblue.poll.facet#option", number: 1, },], index: { byteEnd: 64, byteStart: 56, }, },
+                        { features: [{ "$type": "app.pollblue.poll.facet#option", number: 2, },], index: { byteEnd: 78, byteStart: 70, }, },
+                        { features: [{ "$type": "app.pollblue.poll.facet#option", number: 3, },], index: { byteEnd: 92, byteStart: 84, }, },
+                        { features: [{ "$type": "app.pollblue.poll.facet#option", number: 4, },], index: { byteEnd: 110, byteStart: 98, }, },
                     ],
                     createdAt,
                 }

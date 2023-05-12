@@ -43,7 +43,7 @@ async function vote(ipString: string, poll: string, vote: string) {
     await trans
       .queryObject`UPDATE polls SET results = jsonb_set(results, ARRAY[${voteNum}]::text[], (COALESCE(results->(${voteNum}::integer),'0')::int + 1)::text::jsonb) WHERE id = ${pollId}::integer;`;
     await trans.commit();
-  } catch (e) {
+  } catch {
     // Ignore duplicate votes
   }
 }

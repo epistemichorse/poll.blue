@@ -31,9 +31,9 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
     const enumeration = "number";
     const visibleId = generateId(6);
     const results = answers.map(() => 0).concat([0]);
-    let postTemplate, links;
+    let pollPost;
     try {
-        [postTemplate, links] = generatePollText({
+        pollPost = generatePollText({
             visibleId,
             poll: { question, answers, enumeration },
             author: handle,
@@ -63,8 +63,8 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
         createdPost = await agent?.api.app.bsky.feed.post.create(
             { repo: agent.session?.did },
             {
-                text: postTemplate,
-                facets: links,
+                text: pollPost.text,
+                facets: [...pollPost.links, ...pollPost.pollFacets],
                 createdAt
             });
         postUri = createdPost?.uri;

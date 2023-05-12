@@ -3,24 +3,28 @@
 // This file is automatically updated during development when running `dev.ts`.
 
 import config from "./deno.json" assert { type: "json" };
-import * as $0 from "./routes/api/poll.ts";
-import * as $1 from "./routes/api/poll/[poll].ts";
-import * as $2 from "./routes/index.tsx";
-import * as $3 from "./routes/p/[poll].tsx";
-import * as $4 from "./routes/p/[poll]/[vote].tsx";
-import * as $5 from "./routes/post.tsx";
-import * as $6 from "./routes/status.ts";
+import * as $0 from "./routes/.well-known/did.json.ts";
+import * as $1 from "./routes/api/poll.ts";
+import * as $2 from "./routes/api/poll/[poll].ts";
+import * as $3 from "./routes/index.tsx";
+import * as $4 from "./routes/p/[poll].tsx";
+import * as $5 from "./routes/p/[poll]/[vote].tsx";
+import * as $6 from "./routes/post.tsx";
+import * as $7 from "./routes/status.ts";
+import * as $8 from "./routes/xrpc/app/bsky/feed/getFeedSkeleton.ts";
 import * as $$0 from "./islands/post.tsx";
 
 const manifest = {
   routes: {
-    "./routes/api/poll.ts": $0,
-    "./routes/api/poll/[poll].ts": $1,
-    "./routes/index.tsx": $2,
-    "./routes/p/[poll].tsx": $3,
-    "./routes/p/[poll]/[vote].tsx": $4,
-    "./routes/post.tsx": $5,
-    "./routes/status.ts": $6,
+    "./routes/.well-known/did.json.ts": $0,
+    "./routes/api/poll.ts": $1,
+    "./routes/api/poll/[poll].ts": $2,
+    "./routes/index.tsx": $3,
+    "./routes/p/[poll].tsx": $4,
+    "./routes/p/[poll]/[vote].tsx": $5,
+    "./routes/post.tsx": $6,
+    "./routes/status.ts": $7,
+    "./routes/xrpc/app/bsky/feed/getFeedSkeleton.ts": $8,
   },
   islands: {
     "./islands/post.tsx": $$0,

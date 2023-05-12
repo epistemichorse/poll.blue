@@ -21,6 +21,7 @@ export type Poll = {
 interface Template {
     text: string;
     link?: string;
+    pollFacet?: string;
     truncate: 'yes' | 'no';
 }
 
@@ -32,7 +33,13 @@ interface GenerationOptions {
     pollStyle: 'plain' | 'bot'
 }
 
-export function generatePollText(options: GenerationOptions): [string, AppBskyRichtextFacet.Main[]] {
+interface PollPost {
+    text: string;
+    links: AppBskyRichtextFacet.Main[];
+    pollFacets: AppBskyRichtextFacet.Main[];
+}
+
+export function generatePollText(options: GenerationOptions): PollPost {
     const emojiNumbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
     const emojiLetters = ['🅰', '🅱', '🅲', '🅳']
     const { visibleId, poll, replyRef, author } = options;
@@ -44,7 +51,7 @@ export function generatePollText(options: GenerationOptions): [string, AppBskyRi
         ];
     } else {
         postTemplate = [
-            { text: `"${poll.question}"`, link: undefined, truncate: 'no' },
+            { text: `"${poll.question}"`, link: undefined, truncate: 'no', pollFacet: 'app.pollblue.poll.facet#question' },
             { text: ` asked by `, link: undefined, truncate: 'yes' },
             { text: `@${author}`, link: `https://staging.bsky.app/profile/${author}/post/${postId}`, truncate: 'yes' },
             { text: `. Vote below!`, link: undefined, truncate: 'yes' },
@@ -54,23 +61,30 @@ export function generatePollText(options: GenerationOptions): [string, AppBskyRi
     for (const [i, _answer] of options.poll.answers.entries()) {
         const item = poll.enumeration === 'number' ? emojiNumbers[i] : emojiLetters[i];
         postTemplate.push({ text: `${item} `, link: undefined, truncate: 'no' });
-        postTemplate.push({ text: `${options.poll.answers[i]}`, link: `https://poll.blue/p/${visibleId}/${i + 1}`, truncate: 'no' });
+        postTemplate.push({
+            text: `${options.poll.answers[i]}`,
+            link: `https://poll.blue/p/${visibleId}/${i + 1}`,
+            truncate: 'no',
+            pollFacet: 'app.pollblue.poll.facet#option'
+        });
         postTemplate.push({ text: '\n', link: undefined, truncate: 'no' });
     }
     postTemplate.push({ text: `\n`, link: undefined, truncate: 'no' });
     postTemplate.push({ text: `📊 Show results`, link: `https://poll.blue/p/${visibleId}/0`, truncate: 'no' });
-    let [text, links] = buildTemplate(postTemplate);
-    if (!postLengthValid(text)) {
-        [text, links] = buildTemplate(postTemplate.filter(t => t.truncate === 'no'))
+    let pollPost = buildTemplate(postTemplate);
+    if (!postLengthValid(pollPost.text)) {
+        pollPost = buildTemplate(postTemplate.filter(t => t.truncate === 'no'))
     }
-    if (!postLengthValid(text)) {
-        throw new Error(`post too long: ${text.length} bytes`)
+    if (!postLengthValid(pollPost.text)) {
+        throw new Error(`post too long: ${pollPost.text.length} bytes`)
     }
-    return [text, links];
+    return pollPost;
 }
 
-function buildTemplate(template: Template[]): [string, AppBskyRichtextFacet.Main[]] {
+function buildTemplate(template: Template[]): PollPost {
     const links: AppBskyRichtextFacet.Main[] = [];
+    const pollFacets: AppBskyRichtextFacet.Main[] = [];
+    let questionIndex = 1;
     for (let i = 0, len = 0; i < template.length; len += byteLength(template[i].text), i++) {
         if (template[i].link) {
             links.push({
@@ -81,9 +95,18 @@ function buildTemplate(template: Template[]): [string, AppBskyRichtextFacet.Main
                 }]
             })
         }
+        const pollFacet = template[i].pollFacet;
+        if (pollFacet) {
+            const feature = pollFacet === 'app.pollblue.poll.facet#question' ?
+                { $type: pollFacet } : { $type: pollFacet, number: questionIndex++ };
+            pollFacets.push({
+                index: { byteStart: len, byteEnd: len + byteLength(template[i].text) },
+                features: [feature]
+            })
+        }
     }
     const text = template.map(t => t.text).join('');
-    return [text, links];
+    return { text, links, pollFacets };
 }
 
 export function byteLength(s: string): number {
