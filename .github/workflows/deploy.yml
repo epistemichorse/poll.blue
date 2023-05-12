@@ -44,7 +44,7 @@ jobs:
           PG_HOST=poll-blue-db.internal
           PG_DATABASE=postgres
           EOF
-      - run: deno run ./scripts/validate-env.ts
+      - run: deno run -A ./scripts/validate-env.ts
       - run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
