@@ -8,13 +8,12 @@ jobs:
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
-    container: node:10.18-jessie
     services:
       postgres:
         image: postgres
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_HOST: postgres
+          POSTGRES_HOST: localhost 
         ports:
           - 5432:5432
         options: >-
