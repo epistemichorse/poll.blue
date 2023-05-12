@@ -10,6 +10,7 @@ import { sleep } from "https://deno.land/x/sleep@v1.2.1/mod.ts";
 import { MockBsky } from '../app/mock-bsky.ts';
 import { loadConfigFromEnv, setConfig } from "../app/config.ts";
 import { assertEquals, assertExists } from "https://deno.land/std@0.160.0/testing/asserts.ts";
+import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
 
 const TEST_DB_NAME = "poll_blue_test";
 const TEST_PORT = 8001;
@@ -25,7 +26,7 @@ Deno.test({
         await migrate();
         await connectToDb({
             user: 'postgres',
-            password: '',
+            password: Deno.env.get('POSTGRES_PASSWORD') ?? '',
             database: TEST_DB_NAME,
             hostname: 'localhost',
         });
