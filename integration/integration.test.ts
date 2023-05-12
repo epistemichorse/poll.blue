@@ -1,7 +1,7 @@
 import { ClientPostgreSQL } from "https://deno.land/x/nessie@2.0.10/mod.ts";
 import { FileEntryT } from "https://deno.land/x/nessie@2.0.10/types.ts";
 import { resolve } from "https://deno.land/std@0.185.0/path/mod.ts";
-import { closeDbConnection, connectToDb } from "../app/db.ts";
+import { DbSettings, closeDbConnection, connectToDb } from "../app/db.ts";
 import { start } from "$fresh/server.ts";
 import manifest from "../fresh.gen.ts";
 import twindPlugin from "$fresh/plugins/twind.ts";
@@ -21,14 +21,15 @@ Deno.test({
     sanitizeResources: false,
     sanitizeOps: false,
     async fn(t) {
-        await createDb();
-        await migrate();
-        await connectToDb({
+        const dbConnSettings = {
             user: 'postgres',
             password: Deno.env.get('POSTGRES_PASSWORD') ?? '',
             database: TEST_DB_NAME,
             hostname: Deno.env.get('POSTGRES_HOST') ?? 'localhost',
-        });
+        };
+        await createDb(dbConnSettings);
+        await migrate(dbConnSettings);
+        await connectToDb(dbConnSettings);
         const abortServer = new AbortController();
         const mockBsky = new MockBsky();
         mockBsky.listen(MOCK_BSKY_PORT);
@@ -83,15 +84,25 @@ Deno.test({
     }
 });
 
-async function createDb() {
-    const db = new ClientPostgreSQL({ database: 'postgres', user: 'postgres' });
+async function createDb(settings: DbSettings) {
+    const db = new ClientPostgreSQL({
+        database: 'postgres',
+        user: 'postgres',
+        password: settings.password,
+        hostname: settings.hostname,
+    });
     await db.query(`DROP DATABASE IF EXISTS ${TEST_DB_NAME}`);
     await db.query(`CREATE DATABASE ${TEST_DB_NAME}`);
     await db.close();
 }
 
-async function migrate() {
-    const db = new ClientPostgreSQL({ database: TEST_DB_NAME, user: 'postgres' });
+async function migrate(settings: DbSettings) {
+    const db = new ClientPostgreSQL({
+        database: TEST_DB_NAME,
+        user: 'postgres',
+        password: settings.password,
+        hostname: settings.hostname,
+    });
     const migrations: FileEntryT[] = [];
     for await (const migration of Deno.readDir('./db/migrations')) {
         migrations.push({
