@@ -27,7 +27,7 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      - run: deno test --allow-env --unstable
+      - run: deno test --allow-env --allow-read --unstable
         env:
           INTEGRATION_TESTS: true
       - run: |
