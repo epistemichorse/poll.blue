@@ -33,6 +33,5 @@ EXPOSE 3000
 
 WORKDIR /app
 ADD . /app
-RUN cp .prod.env .env
 RUN deno cache app/main.ts --import-map=import_map.json
 CMD ./scripts/start.sh
