@@ -34,7 +34,7 @@ jobs:
       - run: |
           cat << EOF > .env
           ENV=prod
-          HOSTNAME=https://poll.blue
+          HOSTNAME=poll.blue
           LOCALHOST=http://localhost:8000
           BSKY_USERNAME=poll.blue
           BSKY_PASSWORD=${{ secrets.BSKY_PASSWORD }}
