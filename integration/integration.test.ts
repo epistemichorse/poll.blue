@@ -27,7 +27,7 @@ Deno.test({
             user: 'postgres',
             password: Deno.env.get('POSTGRES_PASSWORD') ?? '',
             database: TEST_DB_NAME,
-            hostname: 'localhost',
+            hostname: Deno.env.get('POSTGRES_HOST') ?? 'localhost',
         });
         const abortServer = new AbortController();
         const mockBsky = new MockBsky();
