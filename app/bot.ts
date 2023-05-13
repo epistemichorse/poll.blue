@@ -1,4 +1,4 @@
-import { default as Agent, AppBskyNotificationListNotifications, AppBskyFeedPost, AppBskyFeedDefs, AppBskyFeedLike } from "https://esm.sh/v115/@atproto/api@0.2.3"
+import { default as Agent, AppBskyNotificationListNotifications, AppBskyFeedPost, AppBskyFeedDefs } from "https://esm.sh/v115/@atproto/api@0.2.3"
 import { Client } from "https://deno.land/x/postgres@v0.17.0/mod.ts";
 import TTL from "https://deno.land/x/ttl@1.0.1/mod.ts";
 import * as log from "https://deno.land/std@0.183.0/log/mod.ts";
@@ -247,6 +247,39 @@ export class Bot {
                 createdAt
             }
         );
+    }
+
+    async linkToReplyRef(link: string): Promise<AppBskyFeedPost.ReplyRef | undefined> {
+        if (!link) {
+            return;
+        }
+        let did, rkey;
+        if (link.startsWith('at://')) {
+            [did, , rkey] = link.split("/").slice(-3);
+        } else {
+            const matches = /https:\/\/(?:staging\.)?bsky\.app\/profile\/([^/]+)\/post\/([^/]+)/.exec(link);
+            if (matches) {
+                try {
+                    const resp = await this.agent?.api.com.atproto.identity.resolveHandle({ handle: matches[1] })
+                    did = resp?.data.did;
+                    rkey = matches[2];
+                } catch {
+                    return;
+                }
+            }
+        }
+        if (!did || !rkey) {
+            return;
+        }
+        try {
+            const post = await this.agent?.api.app.bsky.feed.post.get({ repo: did, rkey });
+            if (!post) {
+                return;
+            }
+            return { root: post.value.reply?.root ?? post, parent: post };
+        } catch {
+            return;
+        }
     }
 }
 

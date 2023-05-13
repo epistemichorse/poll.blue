@@ -6,6 +6,7 @@ import { generateId, generatePollText } from "../../app/poll-utils.ts";
 import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.2.3"
 import { z } from "https://deno.land/x/zod@v3.16.1/mod.ts";
 import { getConfig } from "../../app/config.ts";
+import { json } from "../../app/utils.ts";
 
 const postPollSchema = z.object({
     question: z.string().min(1).max(200),
@@ -13,11 +14,16 @@ const postPollSchema = z.object({
     handle: z.string().max(100),
     password: z.string(),
     user_agent: z.string().max(100),
+    reply_to: z.string().max(200).optional(),
 });
 
 export const handler = async (req: Request, _ctx: HandlerContext): Promise<Response> => {
     if (req.method !== "POST") {
         return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405 });
+    }
+    const botClient = getBotClient();
+    if (!botClient) {
+        return json({ error: "Bot client not configured" }, 500);
     }
     const client = getDbClient();
     const body: any = (await req.json());
@@ -27,7 +33,7 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
             "error": pollParse.error.format()
         }), { status: 400 });
     }
-    const { question, answers, handle, password, user_agent: userAgent } = pollParse.data;
+    const { question, answers, handle, password, user_agent: userAgent, reply_to: replyTo } = pollParse.data;
     const enumeration = "number";
     const visibleId = generateId(6);
     const results = answers.map(() => 0).concat([0]);
@@ -59,12 +65,14 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
     }
     let postUri = null;
     let createdPost: { uri: string, cid: string } | undefined;
+    const replyRef = replyTo ? await botClient?.linkToReplyRef(replyTo) : undefined;
     try {
         createdPost = await agent?.api.app.bsky.feed.post.create(
             { repo: agent.session?.did },
             {
                 text: pollPost.text,
                 facets: [...pollPost.links, ...pollPost.pollFacets],
+                reply: replyRef,
                 createdAt
             });
         postUri = createdPost?.uri;
@@ -99,8 +107,7 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
         }), { status: 500 });
     }
     likeAndRepost: try {
-        const botClient = getBotClient();
-        if (!botClient || !createdPost) {
+        if (!createdPost) {
             break likeAndRepost;
         }
         const replyRef = {

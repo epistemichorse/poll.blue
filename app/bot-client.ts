@@ -17,7 +17,6 @@ export async function setupBotClient(settings: SetupBotSettings) {
     if (getConfig('ENV') === 'dev') {
         const mock = new MockBsky();
         mock.listen(8002);
-        return;
     }
     const { host, username, password } = settings;
     bot = new Bot({

@@ -31,12 +31,37 @@ function fakeAgent(): Agent {
                         post: {
                             create: spy((_params: Omit<ComAtprotoRepoCreateRecord.InputSchema, 'collection' | 'record'>, _record: AppBskyFeedPost.Record, _headers?: Record<string, string>) => {
                                 return;
-                            })
+                            }),
+                            get: (params: { repo: string, rkey: string }) => {
+                                const repos: Record<string, Record<string, any>> = {
+                                    'did:plc:3rpxqcxyf5aqs3s7jpd36gbm': {
+                                        '3jtjczuf2ls2s': {
+                                            uri: 'at://test',
+                                            cid: 'abcdef',
+                                            value: {}
+                                        }
+                                    }
+                                }
+                                return repos[params.repo][params.rkey];
+                            }
                         },
                         like: {
                             create: spy(() => {
                                 return;
                             })
+                        }
+                    }
+                }
+            },
+            com: {
+                atproto: {
+                    identity: {
+                        resolveHandle: () => {
+                            return {
+                                data: {
+                                    did: "did:plc:3rpxqcxyf5aqs3s7jpd36gbm"
+                                }
+                            }
                         }
                     }
                 }
@@ -177,3 +202,27 @@ Deno.test("creates poll results", () => {
 
     assertEquals(text, expected);
 });
+
+Deno.test("produces a ReplyRef from a link", async () => {
+    const bot = await setup();
+    const expected = {
+        parent: {
+            cid: "abcdef",
+            uri: "at://test",
+            value: {},
+        },
+        root: {
+            cid: "abcdef",
+            uri: "at://test",
+            value: {},
+        },
+    };
+    const replyRef1 = await bot.linkToReplyRef("https://staging.bsky.app/profile/epistemic.horse/post/3jtjczuf2ls2s");
+    const replyRef2 = await bot.linkToReplyRef("https://bsky.app/profile/epistemic.horse/post/3jtjczuf2ls2s");
+    const replyRef3 = await bot.linkToReplyRef("at://did:plc:3rpxqcxyf5aqs3s7jpd36gbm/app.bsky.feed.post/3jtjczuf2ls2s");
+    assertEquals(replyRef1, expected);
+    assertEquals(replyRef2, expected);
+    assertEquals(replyRef3, expected);
+
+    assertEquals(await bot.linkToReplyRef("garbage"), undefined);
+})

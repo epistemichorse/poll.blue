@@ -8,6 +8,8 @@ export default function PostPoll() {
   const [options, setOptions] = useState(["", "", "", ""]);
   const [postUri, setPostUri] = useState("");
   const [error, setError] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [replyTo, setReplyTo] = useState(undefined);
   async function postPoll(evt: Event) {
     evt.preventDefault();
     const response = await fetch("/api/poll", {
@@ -18,6 +20,7 @@ export default function PostPoll() {
         question,
         answers: options.filter((opt) => opt != ""),
         user_agent: "poll.blue",
+        reply_to: replyTo,
       }),
     });
     if (response.status === 200) {
@@ -111,13 +114,39 @@ export default function PostPoll() {
             />
           </div>
         ))}
+        <div class="mb-4">
+          <p class="text-gray-400 text-sm font-bold mb-2">
+            <a href="#" onClick={() => setShowAdvanced(!showAdvanced)}>
+              Advanced options (Toggle)
+            </a>
+          </p>
+          <div class={showAdvanced ? "" : "hidden"}>
+            <label
+              class="block text-gray-400 text-sm font-bold mb-2"
+              for="reply_to"
+            >
+              Reply to (bsky app URL or at:// URI)
+            </label>
+            <input
+              class="appearance-none border rounded mb-2 w-full py-2 px-3 text-gray-400 leading-tight focus:outline-none focus:shadow-outline"
+              id="reply_to"
+              type="text"
+              value={replyTo}
+              maxLength={200}
+              onInput={({ target }) => {
+                setReplyTo(target && (target as any).value);
+              }}
+              placeholder="https://staging.bsky.app/profile/jay.bsky.team/post/3juflvnb3d62u"
+            />
+          </div>
+        </div>
         {options.filter((opt) => opt != "").length >= 2 &&
           (
             <div
               class="p-4 my-4 text-xl bg-gray-400 rounded"
               style="overflow-wrap: break-word"
             >
-              <p class="mb-6">
+              <p class="mb-4">
                 {question}
               </p>
               <ol>
