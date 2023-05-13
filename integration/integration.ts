@@ -8,8 +8,9 @@ import twindPlugin from "$fresh/plugins/twind.ts";
 import twindConfig from "../twind.config.ts";
 import { sleep } from "https://deno.land/x/sleep@v1.2.1/mod.ts";
 import { MockBsky } from '../app/mock-bsky.ts';
-import { loadConfigFromEnv, setConfig } from "../app/config.ts";
+import { getConfig, loadConfigFromEnv, setConfig } from "../app/config.ts";
 import { assertEquals, assertExists } from "https://deno.land/std@0.160.0/testing/asserts.ts";
+import { setupBotClient } from "../app/bot-client.ts";
 
 const TEST_DB_NAME = "poll_blue_test";
 const TEST_PORT = 8001;
@@ -30,6 +31,11 @@ export async function integrationTest(t: Deno.TestContext) {
     mockBsky.listen(MOCK_BSKY_PORT);
     await loadConfigFromEnv();
     setConfig('BSKY_HOST', mockBsky.getHost())
+    setupBotClient({
+        username: 'empty',
+        password: 'password',
+        host: mockBsky.getHost(),
+    })
     start(manifest, { plugins: [twindPlugin(twindConfig)], port: TEST_PORT, signal: abortServer.signal });
     await sleep(1);
 
@@ -53,8 +59,11 @@ export async function integrationTest(t: Deno.TestContext) {
         assertExists(json.id);
         assertExists(json.post_uri);
         assertEquals(mockBsky.getCalls(), [
-            '/xrpc/com.atproto.server.createSession',
-            '/xrpc/com.atproto.repo.createRecord'
+            '/xrpc/com.atproto.server.createSession', // poll.blue agent
+            '/xrpc/com.atproto.server.createSession', // poll poster agent
+            '/xrpc/com.atproto.repo.createRecord', // post
+            '/xrpc/com.atproto.repo.createRecord', // like
+            '/xrpc/com.atproto.repo.createRecord', // repost
         ]);
         pollId = json.id;
     });
