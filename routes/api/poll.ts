@@ -92,7 +92,7 @@ export const handler = async (req: Request, _ctx: HandlerContext): Promise<Respo
             visible_id,
             results_posted,
             user_agent) VALUES (
-                ${handle},
+                ${agent.session!.handle},
                 ${postUri},
                 ${question},
                 ${JSON.stringify(answers)},
