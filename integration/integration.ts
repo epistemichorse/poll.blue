@@ -78,7 +78,7 @@ export async function integrationTest(t: Deno.TestContext) {
         assertEquals(json.question, 'this is a poll');
         assertEquals(json.answers, ['one', 'two']);
         assertEquals(json.results, [0, 0, 0]);
-        assertEquals(json.posted_by, 'test.poll.blue');
+        assertEquals(json.posted_by, 'epistemic.horse');
         assertExists(json.created_at);
     });
 
